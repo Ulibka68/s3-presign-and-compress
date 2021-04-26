@@ -1,10 +1,14 @@
-import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
-import { Readable, Duplex } from 'stream';
-import sharp = require('sharp');
-import { FitEnum, GravityEnum } from 'sharp';
-require('dotenv').config();
-const ReadableStreamClone = require('./cloneReadableStream');
-require('./memoryUsage');
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+} from "@aws-sdk/client-s3";
+import { Readable, Duplex } from "stream";
+import sharp = require("sharp");
+import { FitEnum, GravityEnum } from "sharp";
+require("dotenv").config();
+const ReadableStreamClone = require("./cloneReadableStream");
+require("./memoryUsage");
 
 export interface RGBA {
   r: number;
@@ -17,12 +21,21 @@ export interface RGBA {
 const s3 = new S3Client({
   region: process.env.AWS_REGION,
   endpoint: process.env.AWS_ENDPOINT,
-  apiVersion: 'latest',
+  apiVersion: "latest",
   // credentials: { accessKeyId: process.env.AWS_KEY, secretAccessKey: process.env.AWS_SECRET },
   // credential автоматически грузится из .env
 });
 
 const CompressBacketName = process.env.COMPRESSBACKETNAME;
+
+function generateOutputPictName() {
+  const d = new Date();
+  let a = `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}/`;
+  for (let i = 1; i < 14; i++) {
+    a += Math.floor(Math.random() * 16).toString(16);
+  }
+  return a;
+}
 
 function createGuid() {
   const S4 = () =>
@@ -35,15 +48,12 @@ function createGuid() {
 export const compressImage = async (
   inpBacketName: string,
   inpPictName,
-  width: number,
-  height: number,
-  imageFormat: 'jpg' | 'png' = 'jpg',
   fit: keyof FitEnum = sharp.fit.contain,
   position: number | string = sharp.gravity.centre,
-  bckgrndColor: RGBA = { r: 46, g: 138, b: 138, alpha: 1 },
+  bckgrndColor: RGBA = { r: 46, g: 138, b: 138, alpha: 1 }
 ): Promise<{
-  jpgImage?: string;
-  webpImage?: string;
+  jpg1600?: string;
+  jpg350?: string;
   errName?: string;
 }> => {
   // Set the parameters.
@@ -52,81 +62,82 @@ export const compressImage = async (
     Key: inpPictName,
   };
 
-  const outputNameArr = inpPictName.split('/');
-  let outputPictName = inpPictName;
-  if (outputNameArr.length > 1) outputPictName = outputNameArr[outputNameArr.length - 1];
-  outputPictName = outputPictName.split('.')[0];
-  outputPictName = `imgs/${width}x${height}/${inpBacketName}/${outputPictName}`;
-
   try {
     const data = await s3.send(new GetObjectCommand(getParams));
 
     const inpStream: Readable = data.Body as Readable;
-    const readClone1 = new ReadableStreamClone(inpStream, { highWaterMark: inpStream.readableHighWaterMark });
-    const readClone2 = new ReadableStreamClone(inpStream, { highWaterMark: inpStream.readableHighWaterMark });
+    const readClone1 = new ReadableStreamClone(inpStream, {
+      highWaterMark: inpStream.readableHighWaterMark,
+    });
+    const readClone2 = new ReadableStreamClone(inpStream, {
+      highWaterMark: inpStream.readableHighWaterMark,
+    });
 
-    const transformerJPEG: Duplex = sharp()
+    const transformerJPEG1600: Duplex = sharp()
       .rotate()
       .resize({
-        width,
-        height,
+        width: 1600,
         fit,
         position,
         background: bckgrndColor,
         fastShrinkOnLoad: true,
       })
-      .toFormat(imageFormat === 'jpg' ? sharp.format.jpeg : sharp.format.png);
+      .toFormat(sharp.format.jpeg);
 
-    const transformerWEBP: Duplex = sharp()
+    const transformerJPEG350: Duplex = sharp()
       .rotate()
       .resize({
-        width,
-        height,
+        width: 350,
         fit,
         position,
         background: bckgrndColor,
         fastShrinkOnLoad: true,
       })
-      .toFormat(sharp.format.webp);
+      .toFormat(sharp.format.jpeg);
 
-    const uploadParamsJPEG = {
+    const outpName = generateOutputPictName();
+
+    const uploadParamsJPEG1600 = {
       Bucket: CompressBacketName,
-      Key: outputPictName + '.' + imageFormat,
-      Body: readClone1.pipe(transformerJPEG),
-      ContentType: imageFormat === 'jpg' ? 'image/jpeg' : 'image/png',
+      Key: outpName + "-1600.jpeg",
+      Body: readClone1.pipe(transformerJPEG1600),
+      ContentType: "image/jpeg",
     };
-    const uploadParamsWEBP = {
+    const uploadParams350 = {
       Bucket: CompressBacketName,
-      Key: outputPictName + '.webp',
-      Body: readClone2.pipe(transformerWEBP),
-      ContentType: 'image/webp',
+      Key: outpName + "-350.jpeg",
+      Body: readClone2.pipe(transformerJPEG350),
+      ContentType: "image/jpeg",
     };
 
-    let dataPut = await s3.send(new PutObjectCommand(uploadParamsJPEG));
+    let dataPut = await s3.send(new PutObjectCommand(uploadParamsJPEG1600));
 
-    dataPut = await s3.send(new PutObjectCommand(uploadParamsWEBP));
+    dataPut = await s3.send(new PutObjectCommand(uploadParams350));
 
     return {
-      jpgImage: 'https://storage.yandexcloud.net/' + CompressBacketName + '/' + outputPictName + '.' + imageFormat,
-      webpImage: 'https://storage.yandexcloud.net/' + CompressBacketName + '/' + outputPictName + '.webp',
+      jpg1600:
+        "https://storage.yandexcloud.net/" +
+        CompressBacketName +
+        "/" +
+        outpName +
+        "-1600.jpeg",
+      jpg350:
+        "https://storage.yandexcloud.net/" +
+        CompressBacketName +
+        "/" +
+        outpName +
+        "-350.jpeg",
     };
   } catch (err) {
-    console.error('ERROR : ', err.name);
-    if (err.name === 'NoSuchKey')
-      return { errName: 'Не найдено входящее изображение : ' + inpBacketName + '/' + inpPictName };
+    console.error("ERROR : ", err.name);
+    if (err.name === "NoSuchKey")
+      return {
+        errName:
+          "Не найдено входящее изображение : " +
+          inpBacketName +
+          "/" +
+          inpPictName,
+      };
     else return { errName: err.errName };
   }
 };
-
-// compressImage('pict26', 'imgs/pict1.jpg', 400, 400, 'png', { r: 46, g: 138, b: 138, alpha: 0 });
-// 12 MB
-
-/*
-async function runCompress() {
-  const retImgs = await compressImage('pict26', 'imgs/20210323_070123.jpg', 400, 400, 'png');
-  console.log(retImgs);
-}
-runCompress();
-
-
- */

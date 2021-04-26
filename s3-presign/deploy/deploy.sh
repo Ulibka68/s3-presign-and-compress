@@ -1,24 +1,24 @@
 #!/bin/sh
 #source ../.env
+cd s3-presign
+pwd
 export $(grep -v '^#' ./.env | xargs -d '\n')
-
+rm -R dist
 
 echo "npx tsc --build tsconfig.json"
-rm -R ./dist
 npx tsc --build tsconfig.json
-pwd
 cp package.json ./dist/package.json
 
 
 echo "Создание версии функции $FUNCTION_NAME"
-/root/yandex-cloud/bin/yc serverless function version create \
+yc serverless function version create \
   --function-name=$FUNCTION_NAME \
   --runtime nodejs14 \
   --entrypoint index.handler \
-  --memory 128m \
+  --memory 256m \
   --execution-timeout 8s \
   --source-path ./dist \
   --service-account-id=$SERVICE_ACCOUNT_ID \
   --folder-id $FOLDER_ID \
-  --environment AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY,AWS_REGION="ru-central1",AWS_ENDPOINT="https://storage.yandexcloud.net",COMPRESSBACKETNAME=$COMPRESSBACKETNAME,TMPBACKETNAME=$TMPBACKETNAME
+  --environment AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY,AWS_REGION=$AWS_REGION,AWS_ENDPOINT=$AWS_ENDPOINT,COMPRESSBACKETNAME=$COMPRESSBACKETNAME,TMPBACKETNAME=$TMPBACKETNAME
 
