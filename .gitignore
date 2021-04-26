@@ -1,0 +1,12 @@
+# editor
+.idea
+# modules
+node_modules
+**/node_modules
+**/dist
+**/src/text*.txt
+**/tmp
+# secrets
+.env
+main.env
+funcid.env
