@@ -3,11 +3,7 @@ import { YC } from "./yc";
 require("dotenv").config();
 
 /*
- inpBacketName: string,
-  inpPictName,
-  width: number,
-  height: number,
-  imageFormat: 'jpg' | 'png' = 'jpg',
+   inpPictName,
   fit: keyof FitEnum = sharp.fit.contain,
   position: number | string = sharp.gravity.centre,
   bckgrndColor: RGBA = { r: 46, g: 138, b: 138, alpha: 1 },

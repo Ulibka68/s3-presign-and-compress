@@ -22,7 +22,8 @@ export const preSignedUrl = async (pictName) => {
     const params: PutObjectCommandInput = {
       Bucket: process.env.TMPBACKETNAME,
       Key: pictName,
-      ContentType: "image",
+      ContentType: "image/jpeg",
+      ACL: "public-read",
       // Body: "BODY",
     };
 

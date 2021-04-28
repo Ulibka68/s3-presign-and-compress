@@ -74,8 +74,11 @@
         // const URL = await getPreSignedUrl(fileData.name);
         const URL = await getPreSignedUrl(fileData.name);
         console.log('URL : ', URL.preSignedUrl);
+
         // const responce =  await sendFileDataXhr(fileData,URL.preSignedUrl);
-        const responce =  await sendFileDataFetch(fileData,URL.preSignedUrl);
+        // const responce =  await sendFileDataFetch(fileData,URL.preSignedUrl);
+        const responce =  await uploadImage(fileData,URL.preSignedUrl);
+
         console.log(responce);
     }
 
@@ -90,7 +93,7 @@
 
     async function getPreSignedUrl(fname) {
         return new Promise((resolve, reject) => {
-            let url = new URL('https://functions.yandexcloud.net/d4ev55qi9k5829c4238v');
+            let url = new URL('https://functions.yandexcloud.net/d4e9kl5pgpjg1tl244gr');
             url.searchParams.set('inpPictName', fname)
 
             let xhr = new XMLHttpRequest();
@@ -146,6 +149,48 @@
         // result=await result.text();
         return result;
     }
+
+    const MAX_IMAGE_SIZE = 1000000000;
+    let imageStream ='';
+    async function createImage (file) {
+        return new Promise((resolve,reject)=> {
+            let reader = new FileReader()
+            reader.onload = (e) => {
+                console.log('length: ', e.target.result.includes('data:image/jpeg'))
+                if (!e.target.result.includes('data:image/jpeg')) {
+                    reject('Wrong file type - JPG only.')
+                }
+                if (e.target.result.length > MAX_IMAGE_SIZE) {
+                    reject('Image is loo large.');
+                }
+
+                imageStream = e.target.result;
+                resolve(imageStream);
+            }
+            reader.readAsDataURL(file)
+        });
+    }
+
+    async function uploadImage (fileData,URL) {
+        console.log('Upload clicked')
+        await createImage(fileData);
+        console.log('length : ', imageStream.length);
+
+        let binary = atob(imageStream.split(',')[1])
+        let array = []
+        for (var i = 0; i < binary.length; i++) {
+            array.push(binary.charCodeAt(i))
+        }
+        let blobData = new Blob([new Uint8Array(array)], {type: 'image/jpeg'})
+
+        const result = await fetch(URL, {
+            method: 'PUT',
+            body: blobData
+        })
+        console.log('Result: ', result)
+    }
+
+
 </script>
 
 </body>
