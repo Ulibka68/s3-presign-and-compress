@@ -7,11 +7,27 @@ module.exports.handler = async function (
 ) {
   const { httpMethod, queryStringParameters } = event;
 
-  if (httpMethod != "GET")
+  console.log(httpMethod);
+  if (httpMethod === "OPTIONS") {
+    const response = {
+      statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Headers": "*",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "OPTIONS,POST,GET",
+      },
+      body: JSON.stringify("Hello from Lambda!"),
+    };
+    return response;
+  }
+
+  if (httpMethod != "POST")
     return {
       statusCode: 405,
       headers: {
         "Content-Type": "application/json; charset=utf-8",
+        "Access-Control-Allow-Headers": "*",
+        "Access-Control-Allow-Origin": "*",
       },
       body: JSON.stringify({
         errMsg: "Используйте метод GET для получения картинки",

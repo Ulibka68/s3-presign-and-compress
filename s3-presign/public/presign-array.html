@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+<h1>Test upload to S3</h1>
+<form>
+  <input type="file" id="fileElem" multiple accept="image/*" >
+
+  <input type="submit" id="submitBtn" value="Отправить">
+  <div id="fileList">
+    <p>No files selected!</p>
+  </div>
+</form>
+
+<script>
+  const submitBtn = document.getElementById('submitBtn');
+  submitBtn.onclick = async (evt) => {
+
+    evt.preventDefault();
+    const fileElem = document.getElementById('fileElem');
+    if (fileElem.files.length > 0) {
+      await getPreSignedUrlsObject(fileElem.files);
+    }
+  }
+
+  const YANDEX_FUNC_GET_PRESIGNED_URL =
+          "https://functions.yandexcloud.net/d4e9kl5pgpjg1tl244gr";
+
+  async function getPreSignedUrlsObject(files) {
+    const nameArr = [];
+    for (i=0;i<files.length;i++) {
+      nameArr.push( files[i].name)
+    }
+    console.log(nameArr);
+    const result = await fetch(YANDEX_FUNC_GET_PRESIGNED_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(nameArr),
+    });
+    console.log("aaaaaaaa");
+    console.log(result);
+    return result;
+  }
+</script>
+</body>
+</html>
