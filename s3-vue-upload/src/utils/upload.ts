@@ -80,15 +80,25 @@ export async function sendFile(fileData: File): Promise<void> {
 
 export async function getPreSignedUrlsObject(files: Array<File>): Promise<any> {
   const nameArr: Array<string> = files.map((file) => file.name);
-  console.log(nameArr);
+  // console.log(nameArr);
   const result = await fetch(YANDEX_FUNC_GET_PRESIGNED_URL, {
-    method: "GET",
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(nameArr),
+  }).then((response) => {
+    return response.json();
   });
-  console.log("aaaaaaaa");
-  console.log(result);
+  // console.log(result["storage-new-features-social.png"]);
   return result;
+}
+
+export async function sendFileArray(files: Array<File>): Promise<void> {
+  const URLs = await getPreSignedUrlsObject(files);
+  console.log("URL : ", URLs);
+
+  for (let i = 0; i < files.length; i++) {
+    await uploadImage(files[i], URLs[files[i].name]);
+  }
 }

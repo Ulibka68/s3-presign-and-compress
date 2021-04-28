@@ -26,7 +26,11 @@
 <script lang="ts">
 import { computed, defineComponent, ref } from "vue";
 import Image from "@/components/Image.vue";
-import { getPreSignedUrlsObject, sendFile } from "@/utils/upload";
+import {
+  getPreSignedUrlsObject,
+  sendFile,
+  sendFileArray,
+} from "@/utils/upload";
 
 export default defineComponent({
   name: "ImageList",
@@ -53,9 +57,10 @@ export default defineComponent({
       fileList.value.splice(ind, 1);
     };
     const uploadImages = async () => {
+      console.log("--------- uploadImages --------");
       // sendFile(fileList.value[0]);
-      console.log("getPreSignedUrlsObject");
-      await getPreSignedUrlsObject(fileList.value);
+      // await getPreSignedUrlsObject(fileList.value);
+      await sendFileArray(fileList.value);
     };
 
     return { fileList, onFileChange, image, removeImage, uploadImages };
