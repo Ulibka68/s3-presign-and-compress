@@ -1,6 +1,4 @@
 import { createApp } from "vue";
-import App from "./App.vue";
-import { store } from "./store";
-import router from "./router";
-
-createApp(App).use(router).use(store).mount("#app");
+// import App from "./App.vue";
+import ImageList from "./views/ImageList.vue";
+createApp(ImageList).mount("#app");

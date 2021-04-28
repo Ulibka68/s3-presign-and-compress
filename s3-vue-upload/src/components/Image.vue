@@ -4,8 +4,6 @@
 
 <script lang="ts">
 import { defineComponent, computed } from "vue";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { useStore, Store, State } from "@/store";
 
 export default defineComponent({
   name: "Image",

@@ -2,10 +2,9 @@
   <div class="card">
     <h1>ImageList</h1>
   </div>
-  <h1>S3 Uploader Test</h1>
 
   <div v-if="!image">
-    <h2>Select an image</h2>
+    <h2>Выбери изображения</h2>
     <input type="file" multiple @change="onFileChange" accept="image/*" />
   </div>
   <div v-else>
