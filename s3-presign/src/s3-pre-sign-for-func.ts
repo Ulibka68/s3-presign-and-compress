@@ -2,10 +2,13 @@ require("dotenv").config();
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
-import { createReadStream, statSync } from "fs";
 import { PutObjectCommandInput } from "@aws-sdk/client-s3/commands/PutObjectCommand";
 
-export const preSignedUrl = async (pictName) => {
+export type PreSignedUrl = Record<string, string>;
+
+export const preSignedUrl = async (
+  pictNames: Array<string>
+): Promise<PreSignedUrl> => {
   try {
     // Create an Amazon S3 service client object.
     const s3Client = new S3Client({
@@ -16,27 +19,28 @@ export const preSignedUrl = async (pictName) => {
       // credential автоматически грузится из .env
     });
 
-    // Create the command.
-    // Set parameters
-    // Create a random names for the Amazon Simple Storage Service (Amazon S3) bucket and key
-    const params: PutObjectCommandInput = {
-      Bucket: process.env.TMPBACKETNAME,
-      Key: pictName,
-      ContentType: "image/jpeg",
-      ACL: "public-read",
-      // Body: "BODY",
-    };
+    const signedUrls: PreSignedUrl = {};
 
-    const command = new PutObjectCommand(params);
+    for (let i = 0; i < pictNames.length; i++) {
+      const params: PutObjectCommandInput = {
+        Bucket: process.env.TMPBACKETNAME,
+        Key: pictNames[i],
+        ContentType: "image/*",
+        ACL: "public-read",
+      };
 
-    // Create the presigned URL.
-    const signedUrl: string = await getSignedUrl(s3Client, command, {
-      expiresIn: 3600,
-    });
+      const command = new PutObjectCommand(params);
 
-    return signedUrl;
+      // Create the presigned URL.
+      const signedUrl: string = await getSignedUrl(s3Client, command, {
+        expiresIn: 3600,
+      });
+      signedUrls[pictNames[i]] = signedUrl;
+    }
+
+    return signedUrls;
   } catch (err) {
     console.log("Error creating presigned URL", err);
-    return "";
+    return { error: "Ошибка запроса URL" };
   }
 };

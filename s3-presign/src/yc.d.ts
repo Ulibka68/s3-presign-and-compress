@@ -19,4 +19,14 @@ export namespace YC {
     body?: string;
     isBase64Encoded?: boolean;
   }
+
+  export interface CloudFunctionsContext {
+    awsRequestId: string;
+    requestId: string;
+    functionName: string;
+    functionVersion: string;
+    memoryLimitInMB: number;
+    logGroupName: string;
+    getPayload: () => any;
+  }
 }

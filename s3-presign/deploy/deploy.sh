@@ -15,8 +15,8 @@ yc serverless function version create \
   --function-name=$FUNCTION_NAME \
   --runtime nodejs14 \
   --entrypoint index.handler \
-  --memory 256m \
-  --execution-timeout 8s \
+  --memory 128m \
+  --execution-timeout 2s \
   --source-path ./dist \
   --service-account-id=$SERVICE_ACCOUNT_ID \
   --folder-id $FOLDER_ID \

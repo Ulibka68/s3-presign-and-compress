@@ -1,7 +1,10 @@
 import { YC } from "./yc";
 import { preSignedUrl } from "./s3-pre-sign-for-func";
 
-module.exports.handler = async function (event: YC.CloudFunctionsHttpEvent) {
+module.exports.handler = async function (
+  event: YC.CloudFunctionsHttpEvent,
+  context: YC.CloudFunctionsContext
+) {
   const { httpMethod, queryStringParameters } = event;
 
   if (httpMethod != "GET")
@@ -16,25 +19,7 @@ module.exports.handler = async function (event: YC.CloudFunctionsHttpEvent) {
       isBase64Encoded: false,
     };
 
-  const mustHaveParams = ["inpPictName"];
-  if (!mustHaveParams.every((element) => queryStringParameters[element]))
-    return {
-      statusCode: 400,
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      body: JSON.stringify({
-        errMsg: "Вы не передали один из обязательных параметров : inpPictName",
-      }),
-      isBase64Encoded: false,
-    };
-
-  const preSignedUrlResult = await preSignedUrl(
-    queryStringParameters.inpPictName
-  );
-  const outMsg = {
-    preSignedUrl: preSignedUrlResult,
-  };
+  const preSignedUrlResult = await preSignedUrl(context.getPayload());
 
   return {
     statusCode: 200,
@@ -42,7 +27,7 @@ module.exports.handler = async function (event: YC.CloudFunctionsHttpEvent) {
       "Content-Type": "application/json; charset=utf-8",
     },
 
-    body: JSON.stringify(outMsg),
+    body: JSON.stringify(preSignedUrlResult),
     isBase64Encoded: false,
   };
 };
