@@ -7,4 +7,7 @@ export const initialState = {
     idUser: "89annsdj77",
     email: "ivan@ivan.ru",
   },
+  images: {
+    fileList: [] as Array<File>,
+  },
 };
