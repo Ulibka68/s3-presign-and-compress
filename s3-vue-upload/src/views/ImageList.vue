@@ -16,7 +16,9 @@
         </button>
       </div>
     </div>
-    <button class="btnSend">Передать изображения</button>
+    <button class="btnSend" @click="uploadImages" :disabled="!image">
+      Передать изображения
+    </button>
   </div>
   <!--  <h2 v-if="uploadURL">Success! Image uploaded to bucket.</h2>-->
 </template>
@@ -24,6 +26,7 @@
 <script lang="ts">
 import { computed, defineComponent, ref } from "vue";
 import Image from "@/components/Image.vue";
+import { sendFile } from "@/utils/upload";
 
 export default defineComponent({
   name: "ImageList",
@@ -49,7 +52,11 @@ export default defineComponent({
       const ind: number = (e.target as any).getAttribute("data-file-ind");
       fileList.value.splice(ind, 1);
     };
-    return { fileList, onFileChange, image, removeImage };
+    const uploadImages = () => {
+      sendFile(fileList.value[0]);
+    };
+
+    return { fileList, onFileChange, image, removeImage, uploadImages };
   },
 });
 </script>
