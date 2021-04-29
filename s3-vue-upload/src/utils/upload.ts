@@ -26,7 +26,7 @@ async function createImage(file: File) {
 
 async function uploadImage(fileData: File, URL: string) {
   await createImage(fileData);
-  console.log("length : ", imageStream.length);
+  console.log("length : ", imageStream.length, " key : ", fileData.name);
 
   const binary = atob(imageStream.split(",")[1]);
   const array = [];
@@ -96,7 +96,7 @@ export async function getPreSignedUrlsObject(files: Array<File>): Promise<any> {
 
 export async function sendFileArray(files: Array<File>): Promise<void> {
   const URLs = await getPreSignedUrlsObject(files);
-  console.log("URL : ", URLs);
+  // console.log("URL : ", URLs);
 
   for (let i = 0; i < files.length; i++) {
     await uploadImage(files[i], URLs[files[i].name]);

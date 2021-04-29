@@ -35,7 +35,7 @@ import {
 export default defineComponent({
   name: "ImageList",
   components: { Image },
-  async setup() {
+  setup() {
     const fileList = ref<Array<File>>([] as Array<File>);
     const image = computed<boolean>(() => fileList.value.length > 0);
 
