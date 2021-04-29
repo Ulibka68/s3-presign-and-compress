@@ -9,6 +9,7 @@ import { FitEnum, GravityEnum } from "sharp";
 require("dotenv").config();
 const ReadableStreamClone = require("./cloneReadableStream");
 require("./memoryUsage");
+import { getFileName } from "./uid-filenames";
 
 export interface RGBA {
   r: number;
@@ -27,15 +28,6 @@ const s3 = new S3Client({
 });
 
 const CompressBacketName = process.env.COMPRESSBACKETNAME;
-
-function generateOutputPictName() {
-  const d = new Date();
-  let a = `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}/`;
-  for (let i = 1; i < 14; i++) {
-    a += Math.floor(Math.random() * 16).toString(16);
-  }
-  return a;
-}
 
 export const compressImage = async (
   inpBacketName: string,
@@ -87,7 +79,7 @@ export const compressImage = async (
       })
       .toFormat(sharp.format.jpeg);
 
-    const outpName = generateOutputPictName();
+    const outpName = getFileName(inpPictName);
 
     const uploadParamsJPEG1600 = {
       Bucket: CompressBacketName,
