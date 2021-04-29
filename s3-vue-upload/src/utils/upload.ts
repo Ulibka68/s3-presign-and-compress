@@ -1,6 +1,8 @@
 const MAX_IMAGE_SIZE = 20_000_000;
 const YANDEX_FUNC_GET_PRESIGNED_URL =
   "https://functions.yandexcloud.net/d4e9kl5pgpjg1tl244gr";
+const YANDEX_FUNC_COMPRESS_IMGS =
+  "https://functions.yandexcloud.net/d4ej8v25ovjhutkflldc";
 
 // type FileReaderResult = string | ArrayBuffer | null ;
 type FileReaderResult = string;
@@ -69,4 +71,19 @@ export async function sendFileArray(
   for (let i = 0; i < files.length; i++) {
     await uploadImage(files[i], URLs[newNames[i]]);
   }
+}
+
+// сжать изображения
+export async function compressArray(newNames: Array<string>) {
+  const result = await fetch(YANDEX_FUNC_COMPRESS_IMGS, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(newNames),
+  }).then((response) => {
+    return response.json();
+  });
+  // console.log(result["storage-new-features-social.png"]);
+  return result;
 }

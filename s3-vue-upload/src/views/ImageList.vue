@@ -11,12 +11,21 @@
     <div v-for="(file1, ind) in fileList" :key="file1.name">
       <div class="flexCont">
         <Image :file="file1" />
-        <button @click="removeImage" class="btnRemove" :data-file-ind="ind">
+        <button
+          @click="removeImage"
+          class="btnRemove"
+          :data-file-ind="ind"
+          :disabled="blockInterface"
+        >
           X
         </button>
       </div>
     </div>
-    <button class="btnSend" @click="uploadImages" :disabled="!image">
+    <button
+      class="btnSend"
+      @click="uploadImages"
+      :disabled="!image || blockInterface"
+    >
       Передать изображения
     </button>
   </div>
@@ -26,7 +35,11 @@
 <script lang="ts">
 import { computed, defineComponent, ref } from "vue";
 import Image from "@/components/Image.vue";
-import { getPreSignedUrlsObject, sendFileArray } from "@/utils/upload";
+import {
+  compressArray,
+  getPreSignedUrlsObject,
+  sendFileArray,
+} from "@/utils/upload";
 import { createUniqueFnames } from "@/utils/uid-filenames";
 
 export default defineComponent({
@@ -35,6 +48,7 @@ export default defineComponent({
   setup() {
     const fileList = ref<Array<File>>([] as Array<File>);
     let newNames: Array<string>;
+    const blockInterface = ref(false);
     const image = computed<boolean>(() => fileList.value.length > 0);
 
     const onFileChange = (e: InputEvent) => {
@@ -57,11 +71,27 @@ export default defineComponent({
 
     const uploadImages = async () => {
       console.log("--------- uploadImages --------");
+
+      /*blockInterface.value = true;
       newNames = createUniqueFnames(fileList.value);
       await sendFileArray(fileList.value, newNames);
+      blockInterface.value = false;*/
+
+      const result = await compressArray([
+        "2021/4/29/61d-228-4aa-d0a.webp",
+        "2021/4/29/046-1ba-b4f-364.png",
+      ]);
+      console.log(result);
     };
 
-    return { fileList, onFileChange, image, removeImage, uploadImages };
+    return {
+      fileList,
+      onFileChange,
+      image,
+      removeImage,
+      uploadImages,
+      blockInterface,
+    };
   },
 });
 </script>
