@@ -27,12 +27,14 @@
 import { computed, defineComponent, ref } from "vue";
 import Image from "@/components/Image.vue";
 import { getPreSignedUrlsObject, sendFileArray } from "@/utils/upload";
+import { createUniqueFnames } from "@/utils/uid-filenames";
 
 export default defineComponent({
   name: "ImageList",
   components: { Image },
   setup() {
     const fileList = ref<Array<File>>([] as Array<File>);
+    let newNames: Array<string>;
     const image = computed<boolean>(() => fileList.value.length > 0);
 
     const onFileChange = (e: InputEvent) => {
@@ -52,11 +54,11 @@ export default defineComponent({
       const ind: number = (e.target as any).getAttribute("data-file-ind");
       fileList.value.splice(ind, 1);
     };
+
     const uploadImages = async () => {
       console.log("--------- uploadImages --------");
-      // sendFile(fileList.value[0]);
-      // await getPreSignedUrlsObject(fileList.value);
-      await sendFileArray(fileList.value);
+      newNames = createUniqueFnames(fileList.value);
+      await sendFileArray(fileList.value, newNames);
     };
 
     return { fileList, onFileChange, image, removeImage, uploadImages };

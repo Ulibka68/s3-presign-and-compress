@@ -37,14 +37,6 @@ function generateOutputPictName() {
   return a;
 }
 
-function createGuid() {
-  const S4 = () =>
-    Math.floor((1 + Math.random()) * 0x10000)
-      .toString(16)
-      .substring(2);
-  return `${S4()}-${S4()}-${S4()}-${S4()}${S4()}`;
-}
-
 export const compressImage = async (
   inpBacketName: string,
   inpPictName,

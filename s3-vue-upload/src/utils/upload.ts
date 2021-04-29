@@ -43,15 +43,15 @@ async function uploadImage(fileData: File, URL: string) {
   // console.log("Result: ", result);
 }
 
-export async function getPreSignedUrlsObject(files: Array<File>): Promise<any> {
-  const nameArr: Array<string> = files.map((file) => file.name);
-  // console.log(nameArr);
+export async function getPreSignedUrlsObject(
+  newNames: Array<string>
+): Promise<any> {
   const result = await fetch(YANDEX_FUNC_GET_PRESIGNED_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(nameArr),
+    body: JSON.stringify(newNames),
   }).then((response) => {
     return response.json();
   });
@@ -59,11 +59,14 @@ export async function getPreSignedUrlsObject(files: Array<File>): Promise<any> {
   return result;
 }
 
-export async function sendFileArray(files: Array<File>): Promise<void> {
-  const URLs = await getPreSignedUrlsObject(files);
+export async function sendFileArray(
+  files: Array<File>,
+  newNames: Array<string>
+): Promise<void> {
+  const URLs = await getPreSignedUrlsObject(newNames);
   // console.log("URL : ", URLs);
 
   for (let i = 0; i < files.length; i++) {
-    await uploadImage(files[i], URLs[files[i].name]);
+    await uploadImage(files[i], URLs[newNames[i]]);
   }
 }
