@@ -72,15 +72,16 @@ export default defineComponent({
     const uploadImages = async () => {
       console.log("--------- uploadImages --------");
 
-      /*blockInterface.value = true;
+      blockInterface.value = true;
       newNames = createUniqueFnames(fileList.value);
       await sendFileArray(fileList.value, newNames);
-      blockInterface.value = false;*/
+      blockInterface.value = false;
 
-      const result = await compressArray([
+      /*const result = await compressArray([
         "2021/4/29/61d-228-4aa-d0a.webp",
         "2021/4/29/046-1ba-b4f-364.png",
-      ]);
+      ]);*/
+      const result = await compressArray(newNames);
       console.log(result);
     };
 
