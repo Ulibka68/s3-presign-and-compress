@@ -26,11 +26,7 @@
 <script lang="ts">
 import { computed, defineComponent, ref } from "vue";
 import Image from "@/components/Image.vue";
-import {
-  getPreSignedUrlsObject,
-  sendFile,
-  sendFileArray,
-} from "@/utils/upload";
+import { getPreSignedUrlsObject, sendFileArray } from "@/utils/upload";
 
 export default defineComponent({
   name: "ImageList",

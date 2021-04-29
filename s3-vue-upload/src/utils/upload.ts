@@ -43,41 +43,6 @@ async function uploadImage(fileData: File, URL: string) {
   // console.log("Result: ", result);
 }
 
-async function getPreSignedUrl(
-  fname: string
-): Promise<{ preSignedUrl: string }> {
-  return new Promise((resolve, reject) => {
-    const url = new URL(YANDEX_FUNC_GET_PRESIGNED_URL);
-    url.searchParams.set("inpPictName", fname);
-
-    const xhr = new XMLHttpRequest();
-
-    // console.log("url.toString() : ", url.toString());
-    xhr.open("GET", url.toString());
-    xhr.responseType = "json";
-    xhr.send();
-
-    xhr.onload = function () {
-      if (xhr.status != 200) {
-        // анализируем HTTP-статус ответа, если статус не 200, то произошла ошибка
-        console.error(`Ошибка ${xhr.status}: ${xhr.statusText}`); // Например, 404: Not Found
-        reject(xhr.statusText);
-      } else {
-        // если всё прошло гладко, выводим результат
-        resolve(xhr.response);
-      }
-    };
-  });
-}
-
-export async function sendFile(fileData: File): Promise<void> {
-  console.log(fileData.name);
-  const URL = await getPreSignedUrl(fileData.name);
-  // console.log("URL : ", URL.preSignedUrl);
-
-  await uploadImage(fileData, URL.preSignedUrl);
-}
-
 export async function getPreSignedUrlsObject(files: Array<File>): Promise<any> {
   const nameArr: Array<string> = files.map((file) => file.name);
   // console.log(nameArr);
