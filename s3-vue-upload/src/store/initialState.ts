@@ -1,10 +1,11 @@
-export type LoadingStates = "Выбрано" | "Загрузка" | "Успешно загружено";
+export type LoadingStates = "Выбрано" | "Загружается" | "Успешно загружено";
 
 export interface OneImageInfo {
   file: File;
   newName: string;
   loadingState: LoadingStates;
   id: number;
+  presignedUrl: string;
 }
 
 export const initialState = {

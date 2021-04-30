@@ -31,7 +31,8 @@ export const mutations: MutationTree<State> & Mutations = {
     counter.counter += payload.addCnt1 + payload.addCnt2;
   },
   setLoadingState({ counter }, payload) {
-    counter.loadingStates[payload.id] = payload.state;
+    const id = counter.imagesInfo.findIndex((value) => value.id === payload.id);
+    counter.loadingStates[id] = payload.state;
   },
   addNewFile({ counter }, payload) {
     const newImg: OneImageInfo = {
@@ -39,6 +40,7 @@ export const mutations: MutationTree<State> & Mutations = {
       newName: generateOutputPictName() + "." + getFileExtension(payload.name),
       loadingState: "Выбрано",
       id: counter.imagesInfo.length,
+      presignedUrl: "",
     };
     counter.imagesInfo.push(newImg);
   },
@@ -59,7 +61,6 @@ export type Getters = {
   nameGet(state: State): (id: number) => string;
   loadStateGet(state: State): (id: number) => LoadingStates;
   imageInfoGet(state: State): Array<OneImageInfo>;
-  newNamesGet;
 };
 
 export const getters: GetterTree<State, State> & Getters = {
@@ -87,7 +88,7 @@ export type ActionsPayload = {
   ];
   setLoadingState: [
     payload: { id: number; state: LoadingStates },
-    returnVal: Promise<void>
+    returnVal: void
   ];
 };
 
@@ -109,13 +110,11 @@ export const actions: Actions = {
 
     return new Promise<number>(() => 1);
   },
-  async setLoadingState(
+  setLoadingState(
     con: AugmentedActionContext,
     payload: { id: number; state: LoadingStates }
-  ): Promise<void> {
-    await setTimeout(() => {
-      con.commit("setLoadingState", payload);
-    }, 2000);
+  ): void {
+    con.commit("setLoadingState", payload);
   },
 };
 

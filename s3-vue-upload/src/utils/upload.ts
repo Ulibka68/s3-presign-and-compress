@@ -1,3 +1,5 @@
+import { store } from "@/store";
+
 const MAX_IMAGE_SIZE = 20_000_000;
 const YANDEX_FUNC_GET_PRESIGNED_URL =
   "https://functions.yandexcloud.net/d4e9kl5pgpjg1tl244gr";
@@ -45,9 +47,12 @@ async function uploadImage(fileData: File, URL: string) {
   // console.log("Result: ", result);
 }
 
-export async function getPreSignedUrlsObject(
-  newNames: Array<string>
-): Promise<any> {
+export async function getPreSignedUrlsObject(): Promise<any> {
+  const newNames: Array<string> = [];
+  for (let i = 0; i < store.state.counter.imagesInfo.length; i++) {
+    newNames.push(store.state.counter.imagesInfo[i].newName);
+  }
+
   const result = await fetch(YANDEX_FUNC_GET_PRESIGNED_URL, {
     method: "POST",
     headers: {
@@ -61,20 +66,29 @@ export async function getPreSignedUrlsObject(
   return result;
 }
 
-export async function sendFileArray(
-  files: Array<File>,
-  newNames: Array<string>
-): Promise<void> {
-  const URLs = await getPreSignedUrlsObject(newNames);
-  // console.log("URL : ", URLs);
+export async function sendFileArray(): Promise<void> {
+  const URLs = await getPreSignedUrlsObject();
 
-  for (let i = 0; i < files.length; i++) {
-    await uploadImage(files[i], URLs[newNames[i]]);
+  for (let i = 0; i < store.state.counter.imagesInfo.length; i++) {
+    const image = store.state.counter.imagesInfo[i];
+    image.presignedUrl = URLs[image.newName];
+    //
+    store.commit("setLoadingState", { id: image.id, state: "Загружается" });
+    await uploadImage(image.file, image.presignedUrl);
+    store.commit("setLoadingState", {
+      id: image.id,
+      state: "Успешно загружено",
+    });
   }
 }
 
 // сжать изображения
-export async function compressArray(newNames: Array<string>) {
+export async function compressArray(): Promise<void> {
+  const newNames: Array<string> = [];
+  for (let i = 0; i < store.state.counter.imagesInfo.length; i++) {
+    newNames.push(store.state.counter.imagesInfo[i].newName);
+  }
+
   const result = await fetch(YANDEX_FUNC_COMPRESS_IMGS, {
     method: "POST",
     headers: {

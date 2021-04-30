@@ -11,6 +11,9 @@
     <div v-for="img in imagesInfo" :key="img.id">
       <div class="flexCont">
         <Image :file="img.file" />
+        <p>Статус : {{ img.loadingState }}</p>
+        <p>newName : {{ img.newName }}</p>
+        <p>id : {{ img.id }}</p>
         <button
           @click="removeImage"
           class="btnRemove"
@@ -74,14 +77,14 @@ export default defineComponent({
 
       blockInterface.value = true;
 
-      await sendFileArray(fileList.value, newNames);
+      await sendFileArray();
       blockInterface.value = false;
 
       /*const result = await compressArray([
         "2021/4/29/61d-228-4aa-d0a.webp",
         "2021/4/29/046-1ba-b4f-364.png",
       ]);*/
-      const result = await compressArray(newNames);
+      const result = await compressArray();
       console.log(result);
     };
 
@@ -116,6 +119,10 @@ export default defineComponent({
   height: 85px;
   border: 1px solid red;
   justify-content: flex-start;
+}
+.flexCont p {
+  padding: 0 1rem;
+  border: 1px solid blue;
 }
 .btnSend {
   font-size: 1.5rem;
