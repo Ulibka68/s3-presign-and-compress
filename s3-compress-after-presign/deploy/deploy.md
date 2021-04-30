@@ -1,12 +1,12 @@
-yc apigatewayv2 get-apis
+# Порядок deploy
 
-https://api.cloud.yandex.net/endpoints
+Deploy делается с помощью yc  
+Утановите yc и создайте профиль
 
-# Создание профиля
+### Начало работы с интерфейсом командной строки
+https://cloud.yandex.ru/docs/cli/quickstart
 
-### Создать токен
-https://oauth.yandex.ru/verification_code#access_token
-
+### Создание профиля
 yc init
 yc config profile create as006
 
@@ -16,13 +16,16 @@ yc config set --token AQAAA*************
 yc config set cloud-id b1gc**************
 yc config profile get as006
 
-### установить парсер json
+### установить парсер json - нужен для yc
 sudo apt-get install jq
 
-sudo adduser gayrat
+# Запуск deploy
+### Из корня проекта запустите:
+./s3-compress-after-presign/deploy/first-setup-func.sh  
+Эта команда создает новую функцию и делает ее публичной.  
+У вновь созданной функции запрашивается function_id и записывает в файл.
 
-# Запускать из корня
-./deploy/first-setup-func.sh
-./deploy/deploy.sh
+Далее запускайте создание экземпляра функции:  
+./s3-compress-after-presign/deploy/deploy.sh
 
 
