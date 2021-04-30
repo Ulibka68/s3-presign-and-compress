@@ -8,13 +8,13 @@
     <input type="file" multiple @change="onFileChange" accept="image/*" />
   </div>
   <div v-else>
-    <div v-for="(file1, ind) in fileList" :key="file1.name">
+    <div v-for="img in imagesInfo" :key="img.id">
       <div class="flexCont">
-        <Image :file="file1" />
+        <Image :file="img.file" />
         <button
           @click="removeImage"
           class="btnRemove"
-          :data-file-ind="ind"
+          :data-file-ind="img.id"
           :disabled="blockInterface"
         >
           X
@@ -41,39 +41,39 @@ import {
   sendFileArray,
 } from "@/utils/upload";
 import { createUniqueFnames } from "@/utils/uid-filenames";
+import { useStore, Store, State } from "@/store";
 
 export default defineComponent({
   name: "ImageList",
   components: { Image },
   setup() {
-    const fileList = ref<Array<File>>([] as Array<File>);
-    let newNames: Array<string>;
+    const store = useStore();
+    const imagesInfo = computed(() => store.getters.imageInfoGet);
+
     const blockInterface = ref(false);
-    const image = computed<boolean>(() => fileList.value.length > 0);
+    const image = computed<boolean>(() => imagesInfo.value.length > 0);
 
     const onFileChange = (e: InputEvent) => {
-      // fileList.value = (e.target as any).files;
       // eslint-disable-next-line
       const fl: FileList = (e.target as any).files;
       const l = fl.length;
-      const arrTmp = [];
 
       for (let i = 0; i < l; i++) {
-        arrTmp.push(fl[i]);
+        store.commit("addNewFile", fl[i]);
       }
-      fileList.value = arrTmp;
     };
+
     const removeImage = (e: Event) => {
       // eslint-disable-next-line
       const ind: number = (e.target as any).getAttribute("data-file-ind");
-      fileList.value.splice(ind, 1);
+      store.commit("removeFile", ind);
     };
 
     const uploadImages = async () => {
       console.log("--------- uploadImages --------");
 
       blockInterface.value = true;
-      newNames = createUniqueFnames(fileList.value);
+
       await sendFileArray(fileList.value, newNames);
       blockInterface.value = false;
 
@@ -86,7 +86,7 @@ export default defineComponent({
     };
 
     return {
-      fileList,
+      imagesInfo,
       onFileChange,
       image,
       removeImage,
