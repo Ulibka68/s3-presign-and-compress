@@ -12,7 +12,7 @@ export interface OneImgInfo {
 
 const state = reactive({
   error: null,
-
+  counter: 1,
   imgInfo: [] as Array<OneImgInfo>,
 });
 
@@ -45,8 +45,15 @@ export function useImages() {
     return true;
   };
 
+  const cnangeImgStateByKey = (key: number, newState: Tstate): boolean => {
+    const ind = state.imgInfo.findIndex((value) => value.key === key);
+    if (ind === -1) return false;
+    state.imgInfo[ind].state = newState;
+    return true;
+  };
+
   return {
-    ...toRefs(state),
-    methods: { addNewImg, findImgByKey, removeImgByKey },
+    state: state,
+    methods: { addNewImg, findImgByKey, removeImgByKey, cnangeImgStateByKey },
   };
 }

@@ -8,8 +8,8 @@
     <input type="file" multiple @change="onFileChange" accept="image/*" />
   </div>
   <div v-else>
-    <div v-for="img in state.imgInfo" :key="img.key">
-      <ImageRow :key="img.key" :file="img.file" :state="img.state" />
+    <div v-for="img in imgs" :key="img.key">
+      <ImageRow :keyId="img.key" :file="img.file" :state="img.state" />
     </div>
     <button
       class="btnSend"
@@ -18,6 +18,7 @@
     >
       Передать изображения
     </button>
+    <button @click="chngState">State change</button>
   </div>
   <!--  <h2 v-if="uploadURL">Success! Image uploaded to bucket.</h2>-->
 </template>
@@ -34,19 +35,20 @@ import { useImages } from "@/state/composition-state";
 
 export default defineComponent({
   name: "ImageList",
+  // eslint-disable-next-line vue/no-unused-components
   components: { ImageRow },
   setup() {
-    const state = useImages();
+    const stateImgs = useImages();
 
     const blockInterface = ref(false);
-    const image = computed<boolean>(() => state.imgInfo.value.length > 0);
+    const image = computed<boolean>(() => stateImgs.state.imgInfo.length > 0);
 
     const onFileChange = (e: InputEvent) => {
       // eslint-disable-next-line
       const fl: FileList = (e.target as any).files;
 
       for (let i = 0; i < fl.length; i++) {
-        state.methods.addNewImg(fl[i]);
+        stateImgs.methods.addNewImg(fl[i]);
       }
     };
 
@@ -67,12 +69,17 @@ export default defineComponent({
       console.log(result);
     };*/
 
+    const chngState = () => {
+      stateImgs.methods.cnangeImgStateByKey(0, "Отправлен");
+    };
+
     return {
-      state,
+      imgs: computed(() => stateImgs.state.imgInfo),
       onFileChange,
       image,
       // uploadImages,
       blockInterface,
+      chngState,
     };
   },
 });

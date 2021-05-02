@@ -1,11 +1,12 @@
 <template>
   <div class="flexCont">
-    <Image :file="props.file" />
-    <p>{{ props.state }}</p>
+    <Image :file="file" />
+    <p>{{ state }}</p>
+    <p>Key : {{ keyId }}</p>
     <button
       @click="removeImage"
       class="btnRemove"
-      :data-file-ind="props.key"
+      :data-file-ind="keyId"
       :disabled="blockInterface"
     >
       X
@@ -20,20 +21,23 @@ import Image from "@/components/Image.vue";
 
 export default defineComponent({
   name: "ImageRow",
+  // eslint-disable-next-line vue/no-unused-components
   components: { Image },
   props: {
     file: File,
-    key: Number,
-    state: Object,
+    keyId: Number,
+    state: String,
   },
   setup(props) {
-    const state = useImages();
+    // console.log("ImageRow : ", props);
+    // console.log(props.state);
+    const stateImgs = useImages();
     const blockInterface = ref(false);
 
     const removeImage = (e: Event) => {
       // eslint-disable-next-line
-      const key: number = (e.target as any).getAttribute("data-file-ind");
-      state.methods.removeImgByKey(key);
+      const key: string = (e.target as any).getAttribute("data-file-ind");
+      stateImgs.methods.removeImgByKey(parseInt(key));
     };
     return {
       blockInterface,
@@ -62,5 +66,8 @@ export default defineComponent({
   height: 85px;
   border: 1px solid red;
   justify-content: flex-start;
+}
+.flexCont p {
+  margin-left: 1rem;
 }
 </style>
