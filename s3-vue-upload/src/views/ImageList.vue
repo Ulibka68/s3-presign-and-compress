@@ -39,7 +39,7 @@ export default defineComponent({
     const state = useImages();
 
     const blockInterface = ref(false);
-    const image = computed<boolean>(() => state.imgInfo.length > 0);
+    const image = computed<boolean>(() => state.imgInfo.value.length > 0);
 
     const onFileChange = (e: InputEvent) => {
       // eslint-disable-next-line

@@ -16,13 +16,15 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { useImages, Tstate } from "@/state/composition-state";
+import Image from "@/components/Image.vue";
 
 export default defineComponent({
   name: "ImageRow",
+  components: { Image },
   props: {
     file: File,
     key: Number,
-    state: Tstate,
+    state: Object,
   },
   setup(props) {
     const state = useImages();
