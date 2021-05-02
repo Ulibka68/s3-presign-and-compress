@@ -8,18 +8,8 @@
     <input type="file" multiple @change="onFileChange" accept="image/*" />
   </div>
   <div v-else>
-    <div v-for="(file1, ind) in fileList" :key="file1.name">
-      <div class="flexCont">
-        <Image :file="file1" />
-        <button
-          @click="removeImage"
-          class="btnRemove"
-          :data-file-ind="ind"
-          :disabled="blockInterface"
-        >
-          X
-        </button>
-      </div>
+    <div v-for="img in state.imgInfo" :key="img.key">
+      <ImageRow :key="img.key" :file="img.file" :state="img.state" />
     </div>
     <button
       class="btnSend"
@@ -34,41 +24,33 @@
 
 <script lang="ts">
 import { computed, defineComponent, ref } from "vue";
-import Image from "@/components/Image.vue";
 import {
   compressArray,
   getPreSignedUrlsObject,
   sendFileArray,
 } from "@/utils/upload";
-import { createUniqueFnames } from "@/utils/uid-filenames";
+import ImageRow from "@/components/ImageRow.vue";
+import { useImages } from "@/state/composition-state";
 
 export default defineComponent({
   name: "ImageList",
-  components: { Image },
+  components: { ImageRow },
   setup() {
-    const fileList = ref<Array<File>>([] as Array<File>);
-    let newNames: Array<string>;
+    const state = useImages();
+
     const blockInterface = ref(false);
-    const image = computed<boolean>(() => fileList.value.length > 0);
+    const image = computed<boolean>(() => state.imgInfo.length > 0);
 
     const onFileChange = (e: InputEvent) => {
-      // fileList.value = (e.target as any).files;
       // eslint-disable-next-line
       const fl: FileList = (e.target as any).files;
-      const l = fl.length;
-      const arrTmp = [];
 
-      for (let i = 0; i < l; i++) {
-        arrTmp.push(fl[i]);
+      for (let i = 0; i < fl.length; i++) {
+        state.methods.addNewImg(fl[i]);
       }
-      fileList.value = arrTmp;
-    };
-    const removeImage = (e: Event) => {
-      // eslint-disable-next-line
-      const ind: number = (e.target as any).getAttribute("data-file-ind");
-      fileList.value.splice(ind, 1);
     };
 
+    /*
     const uploadImages = async () => {
       console.log("--------- uploadImages --------");
 
@@ -77,20 +59,19 @@ export default defineComponent({
       await sendFileArray(fileList.value, newNames);
       blockInterface.value = false;
 
-      /*const result = await compressArray([
+      /!*const result = await compressArray([
         "2021/4/29/61d-228-4aa-d0a.webp",
         "2021/4/29/046-1ba-b4f-364.png",
-      ]);*/
+      ]);*!/
       const result = await compressArray(newNames);
       console.log(result);
-    };
+    };*/
 
     return {
-      fileList,
+      state,
       onFileChange,
       image,
-      removeImage,
-      uploadImages,
+      // uploadImages,
       blockInterface,
     };
   },

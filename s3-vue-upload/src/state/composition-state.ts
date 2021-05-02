@@ -12,8 +12,6 @@ export interface OneImgInfo {
 
 const state = reactive({
   error: null,
-  users: null,
-  loaded: false,
 
   imgInfo: [] as Array<OneImgInfo>,
 });
@@ -23,20 +21,7 @@ function newKey(): number {
   return counterKey++;
 }
 
-export default function useUsers() {
-  const load = async () => {
-    if (!state.loaded) {
-      try {
-        const usersResponse = await fetch(
-          "https://reqres.in/api/users?delay=2"
-        );
-        state.users = await usersResponse.json();
-      } catch (e) {
-        state.error = e;
-      }
-    }
-  };
-
+export function useImages() {
   const addNewImg = (file: File) => {
     const newImg: OneImgInfo = {
       newName: generateOutputPictName(),
@@ -44,13 +29,24 @@ export default function useUsers() {
       key: newKey(),
       state: "Загружен",
     };
+    state.imgInfo.push(newImg);
   };
 
-  // function reactive<T extends object>(target: T): UnwrapNestedRefs<T>
-  //  UnwrapRefSimple
-  const findImgByKey = (key: number): OneImgInfo => {
-    return state.imgInfo.find((value) => value.key === key);
+  const findImgByKey = (key: number): OneImgInfo | null => {
+    const ind = state.imgInfo.findIndex((value) => value.key === key);
+    if (ind === -1) return null;
+    return state.imgInfo[ind];
   };
 
-  return { ...toRefs(state), methods: { load, addNewImg } };
+  const removeImgByKey = (key: number): boolean => {
+    const ind = state.imgInfo.findIndex((value) => value.key === key);
+    if (ind === -1) return false;
+    state.imgInfo.splice(ind, 1);
+    return true;
+  };
+
+  return {
+    ...toRefs(state),
+    methods: { addNewImg, findImgByKey, removeImgByKey },
+  };
 }
