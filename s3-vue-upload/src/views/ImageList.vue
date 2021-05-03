@@ -11,6 +11,12 @@
     <div v-for="img in imgs" :key="img.key">
       <ImageRow :keyId="img.key" :file="img.file" :state="img.state" />
     </div>
+    <div>
+      <p></p>
+      {{ compressState }}
+      <p>Изображения сжимаются</p>
+      <Loader />
+    </div>
     <button
       class="btnSend"
       @click="uploadImages"
@@ -18,7 +24,6 @@
     >
       Передать изображения
     </button>
-    <button @click="chngState">State change</button>
   </div>
   <!--  <h2 v-if="uploadURL">Success! Image uploaded to bucket.</h2>-->
 </template>
@@ -32,11 +37,12 @@ import {
 } from "@/utils/upload";
 import ImageRow from "@/components/ImageRow.vue";
 import { useImages } from "@/state/composition-state";
+import Loader from "@/components/Loader.vue";
 
 export default defineComponent({
   name: "ImageList",
   // eslint-disable-next-line vue/no-unused-components
-  components: { ImageRow },
+  components: { Loader, ImageRow },
   setup() {
     const stateImgs = useImages();
 
@@ -52,34 +58,29 @@ export default defineComponent({
       }
     };
 
-    /*
     const uploadImages = async () => {
       console.log("--------- uploadImages --------");
 
       blockInterface.value = true;
-      newNames = createUniqueFnames(fileList.value);
-      await sendFileArray(fileList.value, newNames);
+      stateImgs.methods.cnangeAllState("Upload");
+      await sendFileArray();
       blockInterface.value = false;
 
-      /!*const result = await compressArray([
+      /*const result = await compressArray([
         "2021/4/29/61d-228-4aa-d0a.webp",
         "2021/4/29/046-1ba-b4f-364.png",
-      ]);*!/
-      const result = await compressArray(newNames);
+      ]);*/
+      const result = await compressArray();
       console.log(result);
-    };*/
-
-    const chngState = () => {
-      stateImgs.methods.cnangeImgStateByKey(0, "Отправлен");
     };
 
     return {
       imgs: computed(() => stateImgs.state.imgInfo),
+      compressState: computed(() => stateImgs.state.compressState),
       onFileChange,
       image,
-      // uploadImages,
+      uploadImages,
       blockInterface,
-      chngState,
     };
   },
 });

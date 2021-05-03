@@ -1,7 +1,10 @@
 import { computed, reactive, ref, toRefs } from "vue";
-import { generateOutputPictName } from "@/utils/uid-filenames";
+import {
+  generateOutputPictName,
+  getFileExtension,
+} from "@/utils/uid-filenames";
 
-export type Tstate = "Загружен" | "Отправлен";
+export type Tstate = "Start" | "Upload" | "Upload finished" | "Отправлен";
 
 export interface OneImgInfo {
   file: File;
@@ -10,9 +13,14 @@ export interface OneImgInfo {
   state: Tstate;
 }
 
+const newNames = [] as Array<string>;
+
 const state = reactive({
   error: null,
-  counter: 1,
+  compressState: "noCompress" as
+    | "noCompress"
+    | "compressStart"
+    | "compressFinished",
   imgInfo: [] as Array<OneImgInfo>,
 });
 
@@ -24,10 +32,10 @@ function newKey(): number {
 export function useImages() {
   const addNewImg = (file: File) => {
     const newImg: OneImgInfo = {
-      newName: generateOutputPictName(),
+      newName: generateOutputPictName() + "." + getFileExtension(file.name),
       file,
       key: newKey(),
-      state: "Загружен",
+      state: "Start",
     };
     state.imgInfo.push(newImg);
   };
@@ -52,8 +60,21 @@ export function useImages() {
     return true;
   };
 
+  const cnangeAllState = (newState: Tstate) => {
+    state.imgInfo.forEach((val) => {
+      val.state = newState;
+    });
+  };
+
   return {
     state: state,
-    methods: { addNewImg, findImgByKey, removeImgByKey, cnangeImgStateByKey },
+    newNames,
+    methods: {
+      addNewImg,
+      findImgByKey,
+      removeImgByKey,
+      cnangeImgStateByKey,
+      cnangeAllState,
+    },
   };
 }

@@ -1,8 +1,12 @@
+import { useImages } from "@/state/composition-state";
+import { getFileExtension } from "@/utils/uid-filenames";
+
 const MAX_IMAGE_SIZE = 20_000_000;
 const YANDEX_FUNC_GET_PRESIGNED_URL =
   "https://functions.yandexcloud.net/d4e9kl5pgpjg1tl244gr";
 const YANDEX_FUNC_COMPRESS_IMGS =
   "https://functions.yandexcloud.net/d4ej8v25ovjhutkflldc";
+const stateImgs = useImages();
 
 // type FileReaderResult = string | ArrayBuffer | null ;
 type FileReaderResult = string;
@@ -61,20 +65,27 @@ export async function getPreSignedUrlsObject(
   return result;
 }
 
-export async function sendFileArray(
-  files: Array<File>,
-  newNames: Array<string>
-): Promise<void> {
+export async function sendFileArray(): Promise<void> {
+  const newNames: Array<string> = stateImgs.newNames;
+  for (let i = 0; i < stateImgs.state.imgInfo.length; i++) {
+    const img = stateImgs.state.imgInfo[i];
+    newNames.push(img.newName);
+  }
+  // console.log(newNames);
+
   const URLs = await getPreSignedUrlsObject(newNames);
   // console.log("URL : ", URLs);
 
-  for (let i = 0; i < files.length; i++) {
-    await uploadImage(files[i], URLs[newNames[i]]);
+  for (let i = 0; i < stateImgs.state.imgInfo.length; i++) {
+    const img = stateImgs.state.imgInfo[i];
+    await uploadImage(img.file, URLs[newNames[i]]);
+    img.state = "Upload finished";
   }
 }
 
 // сжать изображения
-export async function compressArray(newNames: Array<string>) {
+export async function compressArray() {
+  const newNames: Array<string> = stateImgs.newNames;
   const result = await fetch(YANDEX_FUNC_COMPRESS_IMGS, {
     method: "POST",
     headers: {

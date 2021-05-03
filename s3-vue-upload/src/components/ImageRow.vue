@@ -1,13 +1,17 @@
 <template>
   <div class="flexCont">
     <Image :file="file" />
+    <Loader class="loaderpos" v-show="state === 'Upload'" />
     <p>{{ state }}</p>
     <p>Key : {{ keyId }}</p>
+    <p>Len : {{ file.size }}</p>
+    <p v-show="state === 'Upload finished'" class="finalCheckBox">&#x2705;</p>
     <button
       @click="removeImage"
       class="btnRemove"
       :data-file-ind="keyId"
       :disabled="blockInterface"
+      v-show="state === 'Start'"
     >
       X
     </button>
@@ -15,14 +19,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { computed, defineComponent, ref } from "vue";
 import { useImages, Tstate } from "@/state/composition-state";
 import Image from "@/components/Image.vue";
+import Loader from "@/components/Loader.vue";
 
 export default defineComponent({
   name: "ImageRow",
   // eslint-disable-next-line vue/no-unused-components
-  components: { Image },
+  components: { Loader, Image },
   props: {
     file: File,
     keyId: Number,
@@ -69,5 +74,11 @@ export default defineComponent({
 }
 .flexCont p {
   margin-left: 1rem;
+}
+.loaderpos {
+  margin-left: 15px;
+}
+.finalCheckBox {
+  font-size: 2rem;
 }
 </style>
