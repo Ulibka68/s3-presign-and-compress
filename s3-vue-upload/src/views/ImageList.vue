@@ -11,9 +11,10 @@
     <div v-for="img in imgs" :key="img.key">
       <ImageRow :keyId="img.key" :file="img.file" :state="img.state" />
     </div>
-    <div>
-      <p></p>
-      {{ compressState }}
+    <div class="footerInfo">
+      <p>
+        {{ compressState }}
+      </p>
       <p>Изображения сжимаются</p>
       <Loader />
     </div>
@@ -109,5 +110,9 @@ export default defineComponent({
 .btnSend {
   font-size: 1.5rem;
   margin-top: 0.5rem;
+}
+.footerInfo {
+  display: flex;
+  justify-content: flex-start;
 }
 </style>
