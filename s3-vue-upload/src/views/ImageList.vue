@@ -12,11 +12,11 @@
       <ImageRow :keyId="img.key" :file="img.file" :state="img.state" />
     </div>
     <div class="footerInfo">
-      <p>
-        {{ compressState }}
+      <p v-show="compressState === 'compressStart'">Изображения сжимаются</p>
+      <p v-show="compressState === 'compressFinished'" class="msgFinal">
+        Изображения загружены на сервер
       </p>
-      <p>Изображения сжимаются</p>
-      <Loader />
+      <Loader v-show="compressState === 'compressStart'" />
     </div>
     <button
       class="btnSend"
@@ -65,7 +65,6 @@ export default defineComponent({
       blockInterface.value = true;
       stateImgs.methods.cnangeAllState("Upload");
       await sendFileArray();
-      blockInterface.value = false;
 
       /*const result = await compressArray([
         "2021/4/29/61d-228-4aa-d0a.webp",
@@ -104,7 +103,7 @@ export default defineComponent({
   /*align-content: center;*/
   align-items: center;
   height: 85px;
-  border: 1px solid red;
+  /*border: 1px solid red;*/
   justify-content: flex-start;
 }
 .btnSend {
@@ -114,5 +113,13 @@ export default defineComponent({
 .footerInfo {
   display: flex;
   justify-content: flex-start;
+  align-items: center;
+}
+.footerInfo p {
+  padding: 0 1rem;
+}
+.msgFinal {
+  font-weight: bold;
+  font-size: 1.5rem;
 }
 </style>

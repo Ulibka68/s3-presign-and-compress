@@ -7,7 +7,7 @@ chmod 777 ./s3-compress-after-presign/deploy/deploy.sh
 chmod 777 ./s3-presign/deploy/first-setup-func.sh
 chmod 777 ./s3-presign/deploy/deploy.sh
 
-
+-
 
 
 

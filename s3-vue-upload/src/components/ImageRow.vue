@@ -2,9 +2,9 @@
   <div class="flexCont">
     <Image :file="file" />
     <Loader class="loaderpos" v-show="state === 'Upload'" />
-    <p>{{ state }}</p>
+    <!--    <p>{{ state }}</p>
     <p>Key : {{ keyId }}</p>
-    <p>Len : {{ file.size }}</p>
+    <p>Len : {{ file.size }}</p>-->
     <p v-show="state === 'Upload finished'" class="finalCheckBox">&#x2705;</p>
     <button
       @click="removeImage"
@@ -69,7 +69,7 @@ export default defineComponent({
   /*align-content: center;*/
   align-items: center;
   height: 85px;
-  border: 1px solid red;
+  /*border: 1px solid red;*/
   justify-content: flex-start;
 }
 .flexCont p {

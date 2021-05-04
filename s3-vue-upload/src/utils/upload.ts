@@ -32,7 +32,7 @@ async function createImage(file: File) {
 
 async function uploadImage(fileData: File, URL: string) {
   await createImage(fileData);
-  console.log("length : ", imageStream.length, " key : ", fileData.name);
+  // console.log("length : ", imageStream.length, " key : ", fileData.name);
 
   const binary = atob(imageStream.split(",")[1]);
   const array = [];
@@ -85,6 +85,7 @@ export async function sendFileArray(): Promise<void> {
 
 // сжать изображения
 export async function compressArray() {
+  stateImgs.state.compressState = "compressStart";
   const newNames: Array<string> = stateImgs.newNames;
   const result = await fetch(YANDEX_FUNC_COMPRESS_IMGS, {
     method: "POST",
@@ -93,8 +94,10 @@ export async function compressArray() {
     },
     body: JSON.stringify(newNames),
   }).then((response) => {
+    stateImgs.state.compressState = "compressFinished";
     return response.json();
   });
   // console.log(result["storage-new-features-social.png"]);
+  stateImgs.state.compressState = "compressFinished";
   return result;
 }

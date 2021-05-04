@@ -79,7 +79,8 @@ export const compressImage = async (
       })
       .toFormat(sharp.format.jpeg);
 
-    const outpName = getFileName(inpPictName);
+    const outpName =
+      process.env.COMPRESSBACKET_PREFIX + "/" + getFileName(inpPictName);
 
     const uploadParamsJPEG1600 = {
       Bucket: CompressBacketName,
@@ -98,19 +99,12 @@ export const compressImage = async (
 
     dataPut = await s3.send(new PutObjectCommand(uploadParams350));
 
+    const baseUrl = "https://";
+    // const baseUrl=  "https://storage.yandexcloud.net/"
+
     return {
-      jpg1600:
-        "https://storage.yandexcloud.net/" +
-        CompressBacketName +
-        "/" +
-        outpName +
-        "-1600.jpeg",
-      jpg350:
-        "https://storage.yandexcloud.net/" +
-        CompressBacketName +
-        "/" +
-        outpName +
-        "-350.jpeg",
+      jpg1600: baseUrl + CompressBacketName + "/" + outpName + "-1600.jpeg",
+      jpg350: baseUrl + CompressBacketName + "/" + outpName + "-350.jpeg",
     };
   } catch (err) {
     console.error("ERROR : ", err.name);
