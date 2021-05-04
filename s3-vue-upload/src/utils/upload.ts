@@ -98,6 +98,6 @@ export async function compressArray() {
     return response.json();
   });
   // console.log(result["storage-new-features-social.png"]);
-  stateImgs.state.compressState = "compressFinished";
+
   return result;
 }

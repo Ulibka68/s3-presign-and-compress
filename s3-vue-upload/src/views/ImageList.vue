@@ -22,11 +22,17 @@
       class="btnSend"
       @click="uploadImages"
       :disabled="!image || blockInterface"
+      v-show="compressState !== 'compressFinished'"
     >
       Передать изображения
     </button>
   </div>
-  <!--  <h2 v-if="uploadURL">Success! Image uploaded to bucket.</h2>-->
+  <div v-if="resultURLS">
+    <h2>Выходные изображения</h2>
+    <div v-for="(url1, ind) in resultURLS" :key="ind">
+      <a :href="url1" target="_blank">{{ url1 }}</a>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -49,6 +55,7 @@ export default defineComponent({
 
     const blockInterface = ref(false);
     const image = computed<boolean>(() => stateImgs.state.imgInfo.length > 0);
+    const resultURLS = ref(null);
 
     const onFileChange = (e: InputEvent) => {
       // eslint-disable-next-line
@@ -72,6 +79,15 @@ export default defineComponent({
       ]);*/
       const result = await compressArray();
       console.log(result);
+      // eslint-disable-next-line
+      const resURLs = [] as any;
+      Object.keys(result).forEach((val) => {
+        const curImg = result[val];
+        resURLs.push(curImg.jpg350);
+      });
+      resultURLS.value = resURLs;
+      console.log(resultURLS.value);
+      stateImgs.state.compressState = "compressFinished";
     };
 
     return {
@@ -81,6 +97,7 @@ export default defineComponent({
       image,
       uploadImages,
       blockInterface,
+      resultURLS,
     };
   },
 });
