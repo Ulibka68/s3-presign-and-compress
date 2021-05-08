@@ -52,6 +52,7 @@ export default defineComponent({
   components: { Loader, ImageRow },
   setup() {
     const stateImgs = useImages();
+    (window as any).smf_VUE_image_upload_state = stateImgs;
 
     const blockInterface = ref(false);
     const image = computed<boolean>(() => stateImgs.state.imgInfo.length > 0);

@@ -66,6 +66,12 @@ export function useImages() {
     });
   };
 
+  const resetState = () => {
+    state.error = null;
+    state.compressState = "noCompress";
+    state.imgInfo = [];
+  };
+
   return {
     state: state,
     newNames,
@@ -75,6 +81,7 @@ export function useImages() {
       removeImgByKey,
       cnangeImgStateByKey,
       cnangeAllState,
+      resetState,
     },
   };
 }

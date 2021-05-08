@@ -19,4 +19,6 @@ export default defineComponent({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+/*@import "./global.css";*/
+</style>
