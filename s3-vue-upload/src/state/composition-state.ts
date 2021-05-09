@@ -13,7 +13,16 @@ export interface OneImgInfo {
   state: Tstate;
 }
 
-const newNames = [] as Array<string>;
+export interface ResultURL {
+  jpg1600: string;
+  jpg350: string;
+}
+// ключ - это имя первоначального файла
+// 2021/5/9/585-6c4-9f2-568.png:
+//     jpg350: "https://imgprovider.site/resize/2021/5/9/585-6c4-9f2-568-350.jpeg"
+//     jpg1600: "https://imgprovider.site/resize/2021/5/9/585-6c4-9f2-568-1600.jpeg"
+
+export type ResultURLs = Record<string, ResultURL>;
 
 const state = reactive({
   error: null,
@@ -23,6 +32,8 @@ const state = reactive({
     | "compressFinished",
   imgInfo: [] as Array<OneImgInfo>,
   showPopup: false,
+  // newNames: [] as Array<string>,
+  resultURLs: {} as ResultURLs,
 });
 
 let counterKey = 0;
@@ -73,11 +84,23 @@ export function useImages() {
     state.compressState = "noCompress";
     state.imgInfo = [];
     state.showPopup = false;
+    state.resultURLs = {};
+    // state.newNames = [];
+    // console.log("resetState newNames", state.newNames);
+    console.log("resetState  state.imgInfo", state.imgInfo);
+  };
+
+  const form350output = (): Array<string> => {
+    const resURLs = [] as any;
+    Object.keys(state.resultURLs).forEach((val) => {
+      const curImg = state.resultURLs[val];
+      resURLs.push(curImg.jpg350);
+    });
+    return resURLs;
   };
 
   return {
     state: state,
-    newNames,
     methods: {
       addNewImg,
       findImgByKey,
@@ -85,6 +108,7 @@ export function useImages() {
       cnangeImgStateByKey,
       cnangeAllState,
       resetState,
+      form350output,
     },
   };
 }

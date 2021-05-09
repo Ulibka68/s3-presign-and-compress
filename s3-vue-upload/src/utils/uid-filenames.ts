@@ -17,13 +17,13 @@ export function getFileExtension(fname: string): string {
 }
 
 export function createUniqueFnames(files: Array<File>): Array<string> {
-  const newNames = [];
+  const newNames3 = [];
   for (let i = 0; i < files.length; i++) {
-    newNames.push(
+    newNames3.push(
       generateOutputPictName() + "." + getFileExtension(files[i].name)
     );
   }
-  return newNames;
+  return newNames3;
 }
 
 // на всякий случай

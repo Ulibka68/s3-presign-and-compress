@@ -24,7 +24,7 @@
       </button>
     </div>
   </div>
-  <div v-if="resultURLS">
+  <div v-if="resultURLS.length > 0">
     <h2>Изображения загруженные на сервер:</h2>
     <div v-for="(url1, ind) in resultURLS" :key="ind">
       <a :href="url1" target="_blank">
@@ -52,7 +52,6 @@ export default defineComponent({
 
     const blockInterface = ref(false);
     const image = computed<boolean>(() => stateImgs.state.imgInfo.length > 0);
-    const resultURLS = ref(null);
 
     const onFileChange = (e: InputEvent) => {
       // eslint-disable-next-line
@@ -60,6 +59,7 @@ export default defineComponent({
 
       for (let i = 0; i < fl.length; i++) {
         stateImgs.methods.addNewImg(fl[i]);
+        console.log("onFileChange ", fl[i].name);
       }
     };
 
@@ -74,16 +74,8 @@ export default defineComponent({
         "2021/4/29/61d-228-4aa-d0a.webp",
         "2021/4/29/046-1ba-b4f-364.png",
       ]);*/
-      const result = await compressArray();
-      console.log(result);
-      // eslint-disable-next-line
-      const resURLs = [] as any;
-      Object.keys(result).forEach((val) => {
-        const curImg = result[val];
-        resURLs.push(curImg.jpg350);
-      });
-      resultURLS.value = resURLs;
-      console.log(resultURLS.value);
+      stateImgs.state.resultURLs = await compressArray();
+      console.log(stateImgs.state.resultURLs);
       stateImgs.state.compressState = "compressFinished";
     };
 
@@ -94,7 +86,7 @@ export default defineComponent({
       image,
       uploadImages,
       blockInterface,
-      resultURLS,
+      resultURLS: computed(() => stateImgs.methods.form350output()),
     };
   },
 });

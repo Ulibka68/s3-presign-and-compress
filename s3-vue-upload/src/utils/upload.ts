@@ -1,5 +1,4 @@
-import { useImages } from "@/state/composition-state";
-import { getFileExtension } from "@/utils/uid-filenames";
+import { ResultURLs, useImages } from "@/state/composition-state";
 
 const MAX_IMAGE_SIZE = 20_000_000;
 const YANDEX_FUNC_GET_PRESIGNED_URL =
@@ -51,6 +50,7 @@ async function uploadImage(fileData: File, URL: string) {
 
 export async function getPreSignedUrlsObject(
   newNames: Array<string>
+  // eslint-disable-next-line
 ): Promise<any> {
   const result = await fetch(YANDEX_FUNC_GET_PRESIGNED_URL, {
     method: "POST",
@@ -66,33 +66,42 @@ export async function getPreSignedUrlsObject(
 }
 
 export async function sendFileArray(): Promise<void> {
-  const newNames: Array<string> = stateImgs.newNames;
+  console.log(
+    "sendFileArray  stateImgs.state.imgInfo",
+    stateImgs.state.imgInfo
+  );
+  const newNamesTmp = [];
   for (let i = 0; i < stateImgs.state.imgInfo.length; i++) {
     const img = stateImgs.state.imgInfo[i];
-    newNames.push(img.newName);
+    newNamesTmp.push(img.newName);
   }
-  // console.log(newNames);
 
-  const URLs = await getPreSignedUrlsObject(newNames);
+  const URLs = await getPreSignedUrlsObject(newNamesTmp);
   // console.log("URL : ", URLs);
 
   for (let i = 0; i < stateImgs.state.imgInfo.length; i++) {
     const img = stateImgs.state.imgInfo[i];
-    await uploadImage(img.file, URLs[newNames[i]]);
+    await uploadImage(img.file, URLs[newNamesTmp[i]]);
     img.state = "Upload finished";
   }
 }
 
 // сжать изображения
-export async function compressArray() {
+export async function compressArray(): Promise<ResultURLs> {
   stateImgs.state.compressState = "compressStart";
-  const newNames: Array<string> = stateImgs.newNames;
+
+  const newNamesTmp = [];
+  for (let i = 0; i < stateImgs.state.imgInfo.length; i++) {
+    const img = stateImgs.state.imgInfo[i];
+    newNamesTmp.push(img.newName);
+  }
+
   const result = await fetch(YANDEX_FUNC_COMPRESS_IMGS, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(newNames),
+    body: JSON.stringify(newNamesTmp),
   }).then((response) => {
     stateImgs.state.compressState = "compressFinished";
     return response.json();
