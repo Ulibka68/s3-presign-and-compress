@@ -1,4 +1,4 @@
-import { computed, reactive, ref, toRefs } from "vue";
+import { reactive } from "vue";
 import {
   generateOutputPictName,
   getFileExtension,
@@ -22,6 +22,7 @@ const state = reactive({
     | "compressStart"
     | "compressFinished",
   imgInfo: [] as Array<OneImgInfo>,
+  showPopup: false,
 });
 
 let counterKey = 0;
@@ -29,6 +30,7 @@ function newKey(): number {
   return counterKey++;
 }
 
+// eslint-disable-next-line
 export function useImages() {
   const addNewImg = (file: File) => {
     const newImg: OneImgInfo = {
@@ -70,6 +72,7 @@ export function useImages() {
     state.error = null;
     state.compressState = "noCompress";
     state.imgInfo = [];
+    state.showPopup = false;
   };
 
   return {

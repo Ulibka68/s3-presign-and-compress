@@ -1,8 +1,4 @@
 <template>
-  <div class="card">
-    <h1>ImageList</h1>
-  </div>
-
   <div v-if="!image">
     <h2>Выбери изображения</h2>
     <input type="file" multiple @change="onFileChange" accept="image/*" />
@@ -11,37 +7,36 @@
     <div v-for="img in imgs" :key="img.key">
       <ImageRow :keyId="img.key" :file="img.file" :state="img.state" />
     </div>
+
     <div class="footerInfo">
       <p v-show="compressState === 'compressStart'">Изображения сжимаются</p>
       <p v-show="compressState === 'compressFinished'" class="msgFinal">
         Изображения загружены на сервер
       </p>
       <Loader v-show="compressState === 'compressStart'" />
+      <button
+        class="btnSend"
+        @click="uploadImages"
+        :disabled="!image || blockInterface"
+        v-show="compressState === 'noCompress'"
+      >
+        Передать изображения
+      </button>
     </div>
-    <button
-      class="btnSend"
-      @click="uploadImages"
-      :disabled="!image || blockInterface"
-      v-show="compressState !== 'compressFinished'"
-    >
-      Передать изображения
-    </button>
   </div>
   <div v-if="resultURLS">
-    <h2>Выходные изображения</h2>
+    <h2>Изображения загруженные на сервер:</h2>
     <div v-for="(url1, ind) in resultURLS" :key="ind">
-      <a :href="url1" target="_blank">{{ url1 }}</a>
+      <a :href="url1" target="_blank">
+        <img :src="url1" alt="" />
+      </a>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, ref } from "vue";
-import {
-  compressArray,
-  getPreSignedUrlsObject,
-  sendFileArray,
-} from "@/utils/upload";
+import { compressArray, sendFileArray } from "@/utils/upload";
 import ImageRow from "@/components/ImageRow.vue";
 import { useImages } from "@/state/composition-state";
 import Loader from "@/components/Loader.vue";
@@ -52,6 +47,7 @@ export default defineComponent({
   components: { Loader, ImageRow },
   setup() {
     const stateImgs = useImages();
+    // eslint-disable-next-line
     (window as any).smf_VUE_image_upload_state = stateImgs;
 
     const blockInterface = ref(false);
@@ -124,15 +120,33 @@ export default defineComponent({
   /*border: 1px solid red;*/
   justify-content: flex-start;
 }
-.btnSend {
-  font-size: 1.5rem;
-  margin-top: 0.5rem;
-}
 .footerInfo {
   display: flex;
   justify-content: flex-start;
-  align-items: center;
 }
+.btnSend {
+  font-size: 1.5rem;
+  margin: 1rem auto;
+  padding: 0.5rem 1rem;
+  background-color: #fde4bb;
+  border-radius: 5px;
+  box-shadow: 12px 12px 16px 0 rgb(255 255 255 / 30%) inset,
+    -8px -8px 12px 0 rgb(0 0 0 / 25%) inset;
+}
+
+/*Animate the size, outside*/
+.btnSend:hover,
+.btnSend:focus {
+  animation: pulse 1s;
+  box-shadow: 0 0 0 0.5em rgba(255, 255, 255, 0);
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 #ef8f6e;
+  }
+}
+
 .footerInfo p {
   padding: 0 1rem;
 }
