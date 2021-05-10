@@ -77,7 +77,7 @@ export async function sendFileArray(): Promise<void> {
   }
 
   const URLs = await getPreSignedUrlsObject(newNamesTmp);
-  // console.log("URL : ", URLs);
+  // console.log("upload sendFileArray URL : ", URLs);
 
   for (let i = 0; i < stateImgs.state.imgInfo.length; i++) {
     const img = stateImgs.state.imgInfo[i];
