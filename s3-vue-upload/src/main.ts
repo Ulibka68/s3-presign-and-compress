@@ -1,9 +1,10 @@
 import { createApp } from "vue";
 
 // import * as Sentry from "@sentry/vue";
-
 import * as Sentry from "@sentry/browser";
+import { Severity } from "@sentry/browser";
 import { Integrations } from "@sentry/tracing";
+import App from "./App.vue";
 
 Sentry.init({
   dsn:
@@ -16,23 +17,26 @@ Sentry.init({
   tracesSampleRate: 1.0,
 });
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-// myUndefinedFunction();
-
-import App from "./App.vue";
 const app = createApp(App);
 // eslint-disable-next-line
 (window as any).smf_VUE_image_upload = app;
 
-/*
-Sentry.init({
-  Vue: app,
-  dsn:
-    "https://e8f17c6386a44cc58ea9d8ffc84de4a8@o644502.ingest.sentry.io/5758343",
-});*/
+// eslint-disable-next-line
+app.config.errorHandler = (err, vm, info) => {
+  Sentry.captureException(err);
+  throw err; // rethrow
+};
+
+const initMsg = `Start upload VUE app ==================\n
+navigator.userAgent ${navigator.userAgent}\n
+pixelDepth : ${window.screen.pixelDepth}, height : ${window.screen.height}, width : ${window.screen.width}`;
+Sentry.captureMessage(initMsg, Severity.Info);
 
 app.mount("#a6309676754D94EB4B758ECCE1FCF316");
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+// myUndefinedFunction();
 
 /*
 import ImageList from "@/views/ImageList.vue";
