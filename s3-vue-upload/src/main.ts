@@ -1,6 +1,5 @@
 import { createApp } from "vue";
 
-// import * as Sentry from "@sentry/vue";
 import * as Sentry from "@sentry/browser";
 import { Severity } from "@sentry/browser";
 import { Integrations } from "@sentry/tracing";
@@ -27,10 +26,13 @@ app.config.errorHandler = (err, vm, info) => {
   throw err; // rethrow
 };
 
+/*
+В sentry все эти данные практически и так видны
 const initMsg = `Start upload VUE app ==================\n
 navigator.userAgent ${navigator.userAgent}\n
 pixelDepth : ${window.screen.pixelDepth}, height : ${window.screen.height}, width : ${window.screen.width}`;
 Sentry.captureMessage(initMsg, Severity.Info);
+*/
 
 app.mount("#a6309676754D94EB4B758ECCE1FCF316");
 

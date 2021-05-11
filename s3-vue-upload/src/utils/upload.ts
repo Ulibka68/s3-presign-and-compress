@@ -65,7 +65,7 @@ export async function getPreSignedUrlsObject(
   return result;
 }
 
-export async function sendFileArray(): Promise<void> {
+export async function sendFileArray(): Promise<string> {
   console.log(
     "sendFileArray  stateImgs.state.imgInfo",
     stateImgs.state.imgInfo
@@ -77,13 +77,23 @@ export async function sendFileArray(): Promise<void> {
   }
 
   const URLs = await getPreSignedUrlsObject(newNamesTmp);
-  // console.log("URL : ", URLs);
+  // console.log("upload sendFileArray URL : ", URLs);
 
+  let logMsg = "";
   for (let i = 0; i < stateImgs.state.imgInfo.length; i++) {
     const img = stateImgs.state.imgInfo[i];
+
+    const startTime = Math.floor(Date.now() / 1000);
+
+    logMsg = logMsg + `${img.file.name} -- ${img.file.size}\n`;
     await uploadImage(img.file, URLs[newNamesTmp[i]]);
+
+    const endTime = Math.floor(Date.now() / 1000) - startTime;
+    logMsg = logMsg + `Uploaded ${img.file.name} at ${endTime} seconds\n`;
+
     img.state = "Upload finished";
   }
+  return logMsg;
 }
 
 // сжать изображения

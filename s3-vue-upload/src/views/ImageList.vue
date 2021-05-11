@@ -40,6 +40,8 @@ import { compressArray, sendFileArray } from "@/utils/upload";
 import ImageRow from "@/components/ImageRow.vue";
 import { useImages } from "@/state/composition-state";
 import Loader from "@/components/Loader.vue";
+import * as Sentry from "@sentry/browser";
+import { Severity } from "@sentry/browser";
 
 export default defineComponent({
   name: "ImageList",
@@ -68,7 +70,8 @@ export default defineComponent({
 
       blockInterface.value = true;
       stateImgs.methods.cnangeAllState("Upload");
-      await sendFileArray();
+      const logMsg = await sendFileArray();
+      Sentry.captureMessage(logMsg, Severity.Info);
 
       /*const result = await compressArray([
         "2021/4/29/61d-228-4aa-d0a.webp",
@@ -122,8 +125,8 @@ export default defineComponent({
   padding: 0.5rem 1rem;
   background-color: #fde4bb;
   border-radius: 5px;
-  box-shadow: 12px 12px 16px 0 rgb(255 255 255 / 30%) inset,
-    -8px -8px 12px 0 rgb(0 0 0 / 25%) inset;
+  box-shadow: 12px 12px 16px 0 rgba(255 255 255 0.3) inset,
+    -8px -8px 12px 0 rgba(0 0 0 0.25) inset;
 }
 
 /*Animate the size, outside*/
