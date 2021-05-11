@@ -1,4 +1,4 @@
-import { ResultURLs, useImages } from "@/state/composition-state";
+import { OneImgInfo, ResultURLs, useImages } from "@/state/composition-state";
 
 const MAX_IMAGE_SIZE = 20_000_000;
 const YANDEX_FUNC_GET_PRESIGNED_URL =
@@ -29,6 +29,8 @@ async function createImage(file: File) {
   });
 }
 
+// Версия на fetch - не используется
+// eslint-disable-next-line
 async function uploadImage(fileData: File, URL: string) {
   await createImage(fileData);
   // console.log("length : ", imageStream.length, " key : ", fileData.name);
@@ -46,6 +48,54 @@ async function uploadImage(fileData: File, URL: string) {
     body: blobData,
   });
   // console.log("Result: ", result);
+}
+
+function XHRupload(
+  blobData: Blob,
+  URL: string,
+  img: OneImgInfo
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const req = new XMLHttpRequest();
+    // отслеживаем процесс отправки
+    req.upload.onprogress = (event) => {
+      const percentComplete = (event.loaded / event.total) * 100;
+      // console.log("XHRupload percentComplete ", percentComplete);
+      img.progress = percentComplete;
+    };
+
+    // Ждём завершения: неважно, успешного или нет
+    req.onloadend = function () {
+      if (req.status == 200) {
+        console.log("Успех");
+        resolve("OK");
+      } else {
+        console.log("Ошибка " + this.status);
+        reject("Upload error");
+      }
+    };
+
+    req.open("PUT", URL, true);
+    req.send(blobData);
+  });
+}
+
+async function uploadImageXHR(
+  fileData: File,
+  URL: string,
+  img: OneImgInfo
+): Promise<string> {
+  await createImage(fileData);
+  // console.log("length : ", imageStream.length, " key : ", fileData.name);
+
+  const binary = atob(imageStream.split(",")[1]);
+  const array = [];
+  for (let i = 0; i < binary.length; i++) {
+    array.push(binary.charCodeAt(i));
+  }
+  const blobData = new Blob([new Uint8Array(array)], { type: "image/jpeg" });
+
+  return await XHRupload(blobData, URL, img);
 }
 
 export async function getPreSignedUrlsObject(
@@ -86,7 +136,8 @@ export async function sendFileArray(): Promise<string> {
     const startTime = Math.floor(Date.now() / 1000);
 
     logMsg = logMsg + `${img.file.name} -- ${img.file.size}\n`;
-    await uploadImage(img.file, URLs[newNamesTmp[i]]);
+    // await uploadImage(img.file, URLs[newNamesTmp[i]]);
+    await uploadImageXHR(img.file, URLs[newNamesTmp[i]], img);
 
     const endTime = Math.floor(Date.now() / 1000) - startTime;
     logMsg = logMsg + `Uploaded ${img.file.name} at ${endTime} seconds\n`;

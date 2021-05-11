@@ -2,9 +2,6 @@
   <div class="flexCont">
     <Image :file="file" />
     <Loader class="loaderpos" v-show="state === 'Upload'" />
-    <!--    <p>{{ state }}</p>
-    <p>Key : {{ keyId }}</p>
-    <p>Len : {{ file.size }}</p>-->
 
     <p v-show="state === 'Upload finished'" class="finalCheckBox">&#x2705;</p>
     <button
@@ -18,7 +15,7 @@
     </button>
   </div>
   <div>Размер : {{ Math.floor(file.size / 1024) }} Kb</div>
-  <div>State {{ state }}</div>
+  <!--  <div>State {{ state }}</div>-->
   <div>
     <input
       v-if="state === 'Upload'"
