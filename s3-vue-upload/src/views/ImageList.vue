@@ -68,7 +68,10 @@ export default defineComponent({
 
       blockInterface.value = true;
       stateImgs.methods.cnangeAllState("Upload");
-      await sendFileArray();
+      const logMsg = await sendFileArray();
+      // eslint-disable-next-line
+      (globalThis as any).smf_Rollbar_vue.warning(logMsg);
+      console.log(logMsg);
 
       /*const result = await compressArray([
         "2021/4/29/61d-228-4aa-d0a.webp",

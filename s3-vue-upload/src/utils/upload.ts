@@ -1,4 +1,5 @@
 import { ResultURLs, useImages } from "@/state/composition-state";
+import Rollbar from "rollbar";
 
 const MAX_IMAGE_SIZE = 20_000_000;
 const YANDEX_FUNC_GET_PRESIGNED_URL =
@@ -6,6 +7,9 @@ const YANDEX_FUNC_GET_PRESIGNED_URL =
 const YANDEX_FUNC_COMPRESS_IMGS =
   "https://functions.yandexcloud.net/d4ej8v25ovjhutkflldc";
 const stateImgs = useImages();
+
+// eslint-disable-next-line
+declare let smf_Rollbar_vue: Rollbar;
 
 // type FileReaderResult = string | ArrayBuffer | null ;
 type FileReaderResult = string;
@@ -65,7 +69,7 @@ export async function getPreSignedUrlsObject(
   return result;
 }
 
-export async function sendFileArray(): Promise<void> {
+export async function sendFileArray(): Promise<string> {
   console.log(
     "sendFileArray  stateImgs.state.imgInfo",
     stateImgs.state.imgInfo
@@ -79,11 +83,23 @@ export async function sendFileArray(): Promise<void> {
   const URLs = await getPreSignedUrlsObject(newNamesTmp);
   // console.log("upload sendFileArray URL : ", URLs);
 
+  let logMsg = "";
   for (let i = 0; i < stateImgs.state.imgInfo.length; i++) {
     const img = stateImgs.state.imgInfo[i];
+
+    const startTime = Math.floor(Date.now() / 1000);
+
+    logMsg = logMsg + `${img.file.name} -- ${img.file.size}\n`;
     await uploadImage(img.file, URLs[newNamesTmp[i]]);
+
+    const endTime = Math.floor(Date.now() / 1000) - startTime;
+    logMsg = logMsg + `Uploaded ${img.file.name} at ${endTime} seconds\n`;
+
     img.state = "Upload finished";
   }
+  return logMsg;
+  // eslint-disable-next-line
+  // (globalThis as any).smf_Rollbar_vue.info(logMsg);
 }
 
 // сжать изображения
