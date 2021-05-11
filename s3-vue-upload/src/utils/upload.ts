@@ -92,6 +92,7 @@ export async function sendFileArray(): Promise<string> {
     logMsg = logMsg + `Uploaded ${img.file.name} at ${endTime} seconds\n`;
 
     img.state = "Upload finished";
+    img.progress = 100;
   }
   return logMsg;
 }

@@ -5,6 +5,7 @@
     <!--    <p>{{ state }}</p>
     <p>Key : {{ keyId }}</p>
     <p>Len : {{ file.size }}</p>-->
+
     <p v-show="state === 'Upload finished'" class="finalCheckBox">&#x2705;</p>
     <button
       @click="removeImage"
@@ -16,11 +17,23 @@
       X
     </button>
   </div>
+  <div>Размер : {{ Math.floor(file.size / 1024) }} Kb</div>
+  <div>State {{ state }}</div>
+  <div>
+    <input
+      v-if="state === 'Upload'"
+      type="range"
+      min="0"
+      max="100"
+      :value="currentProgress"
+      disabled
+    />
+  </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from "vue";
-import { useImages, Tstate } from "@/state/composition-state";
+import { defineComponent, ref } from "vue";
+import { useImages } from "@/state/composition-state";
 import Image from "@/components/Image.vue";
 import Loader from "@/components/Loader.vue";
 
@@ -32,10 +45,10 @@ export default defineComponent({
     file: File,
     keyId: Number,
     state: String,
+    currentProgress: Number,
   },
+  // eslint-disable-next-line
   setup(props) {
-    // console.log("ImageRow : ", props);
-    // console.log(props.state);
     const stateImgs = useImages();
     const blockInterface = ref(false);
 

@@ -11,6 +11,7 @@ export interface OneImgInfo {
   newName: string;
   key: number;
   state: Tstate;
+  progress: number;
 }
 
 export interface ResultURL {
@@ -49,6 +50,7 @@ export function useImages() {
       file,
       key: newKey(),
       state: "Start",
+      progress: 0,
     };
     state.imgInfo.push(newImg);
   };
@@ -91,6 +93,7 @@ export function useImages() {
   };
 
   const form350output = (): Array<string> => {
+    // eslint-disable-next-line
     const resURLs = [] as any;
     Object.keys(state.resultURLs).forEach((val) => {
       const curImg = state.resultURLs[val];

@@ -5,7 +5,12 @@
   </div>
   <div v-else>
     <div v-for="img in imgs" :key="img.key">
-      <ImageRow :keyId="img.key" :file="img.file" :state="img.state" />
+      <ImageRow
+        :keyId="img.key"
+        :file="img.file"
+        :state="img.state"
+        :currentProgress="img.progress"
+      />
     </div>
 
     <div class="footerInfo">
