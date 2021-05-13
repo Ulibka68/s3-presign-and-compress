@@ -42,6 +42,7 @@
       </span>
     </div>
   </div>
+
   <div class="popup-container-background" v-if="showPopup">
     <div class="popup-container">
       <a href="#" class="close-button" @click="state.state.showPopup = false"
@@ -115,15 +116,16 @@ span {
 }
 
 .popup-container {
-  width: 450px;
+  width: 480px;
   max-height: calc(100vh - 40px);
   /*overflow: auto;*/
-  box-sizing: content-box;
+  box-sizing: border-box;
   margin: 0 auto;
   padding: 1rem;
   position: absolute;
   top: 50%;
   left: 50%;
+  /*transform: translate(calc(-50% - 25px), -50%);*/
   transform: translate(-50%, -50%);
 
   box-shadow: 10px 10px 7px rgba(192, 143, 143, 0.75) inset,
@@ -162,5 +164,15 @@ span {
   font-weight: bold;
   color: red;
   padding: 1rem;
+}
+
+@media (max-width: 500px) {
+  .content {
+    width: 100vw;
+  }
+
+  .popup-container {
+    width: calc(100% - 60px);
+  }
 }
 </style>

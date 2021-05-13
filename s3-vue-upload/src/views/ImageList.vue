@@ -29,14 +29,17 @@
       </button>
     </div>
   </div>
-  <div v-if="resultURLS.length > 0">
+
+<!--Отображение результата загрузки -->
+<!--  <div v-if="resultURLS.length > 0">
     <h2>Изображения загруженные на сервер:</h2>
     <div v-for="(url1, ind) in resultURLS" :key="ind">
       <a :href="url1" target="_blank">
         <img :src="url1" alt="" />
       </a>
     </div>
-  </div>
+  </div>-->
+
 </template>
 
 <script lang="ts">
@@ -76,6 +79,19 @@ export default defineComponent({
       blockInterface.value = true;
       stateImgs.methods.cnangeAllState("Upload");
       const logMsg = await sendFileArray();
+
+      /*
+       * данные о системе
+       * */
+      const sysMsg = `System data ==================\n
+pixelDepth : ${window.screen.pixelDepth}, height : ${window.screen.height}, width : ${window.screen.width}`;
+      console.log(sysMsg);
+      /*
+      const elem = document.getElementById("fullWidth");
+      const elem2 = window.getComputedStyle(elem!);
+      console.log("elem2.width ", elem2.width);
+*/
+
       Sentry.captureMessage(logMsg, Severity.Info);
 
       /*const result = await compressArray([
@@ -83,7 +99,7 @@ export default defineComponent({
         "2021/4/29/046-1ba-b4f-364.png",
       ]);*/
       stateImgs.state.resultURLs = await compressArray();
-      console.log(stateImgs.state.resultURLs);
+      // console.log(stateImgs.state.resultURLs);
       stateImgs.state.compressState = "compressFinished";
     };
 
