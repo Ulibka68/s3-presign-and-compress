@@ -23,26 +23,59 @@
 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eum non omnis praesentium quis! Ab aliquid at beatae, cupiditate debitis deserunt eveniet ex incidunt magnam, natus nisi odit officia, optio pariatur placeat porro provident quibusdam quidem quos repellendus sapiente sint sit soluta temporibus totam ullam voluptate. Enim odit quo sit totam? Animi dolorum reprehenderit sapiente temporibus voluptatibus? Architecto blanditiis doloremque eveniet maxime provident quos reiciendis repellat veniam! At odio officiis quod vel. Alias blanditiis delectus eaque et fugiat fugit labore ratione sunt. Ad adipisci amet consequuntur ea eaque, eius error in inventore, iure labore nisi officiis porro quam tempora tempore totam.</p>
 
 <script>
+    let firstInit = true;
+
+    function returnResult() {
+        console.log('---------- Получен результат ------------');
+        console.log(smf_VUE_image_upload_state.state.resultURLs);
+    }
+
+    function waitSMF() {
+        let countWait =0
+        const idTime=setInterval(()=>{
+            if (smf_VUE_image_upload_state) {
+
+                smf_VUE_image_upload_state.state.callBackFunc=returnResult;
+                smf_VUE_image_upload_state.state.showPopup = true;
+                clearInterval(idTime);
+            }
+            console.log('countWait ',countWait);
+            if (++countWait > 5000/10) {
+                clearInterval(idTime);
+                console.error('Ошибка загрузки')
+            } ;
+        },10)
+
+    }
+
     function startVue() {
-        let lnk= document.createElement('link');
-        lnk.rel="stylesheet";
-        lnk.href="./global.css" ;
-        document.head.appendChild(lnk);
+        if (firstInit) {
+            lnk= document.createElement('link');
+            lnk.rel="stylesheet";
+            lnk.href="../../dist/css/app.75dd2d2c.css" ;
+            document.head.appendChild(lnk);
 
-        lnk= document.createElement('link');
-        lnk.rel="stylesheet";
-        lnk.href="./css/app.c033e222.css" ;
-        document.head.appendChild(lnk);
+            lnk= document.createElement('script');
+            lnk.src="../../dist/js/chunk-vendors.c2d9ee6a.js";
+            document.body.appendChild(lnk);
 
-        lnk= document.createElement('script');
-        lnk.src="./js/chunk-vendors.67147369.js";
-        document.body.appendChild(lnk);
+            lnk= document.createElement('script');
+            lnk.src="../../dist/js/app.d3a08d30.js";
+            document.body.appendChild(lnk);
+            lnk.onload =()=>{
 
-        lnk= document.createElement('script');
-        lnk.src="./js/app.154bced1.js";
-        document.body.appendChild(lnk);
+                // smf_VUE_image_upload_state.methods.resetState();
+                // smf_VUE_image_upload_state.state.showPopup = true;
+                waitSMF();
+            };
 
-        document.getElementById("popup-container-background").style.display='block';
+            document.getElementById("popup-container-background").style.display='block';
+            firstInit=false;
+       } else {
+            smf_VUE_image_upload_state.methods.resetState();
+            smf_VUE_image_upload_state.state.showPopup = true;
+        }
+
     }
 </script>
 </body>

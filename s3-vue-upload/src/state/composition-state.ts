@@ -35,6 +35,8 @@ const state = reactive({
   showPopup: false,
   // newNames: [] as Array<string>,
   resultURLs: {} as ResultURLs,
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  callBackFunc: () => {},
 });
 
 let counterKey = 0;
@@ -89,7 +91,7 @@ export function useImages() {
     state.resultURLs = {};
     // state.newNames = [];
     // console.log("resetState newNames", state.newNames);
-    console.log("resetState  state.imgInfo", state.imgInfo);
+    // console.log("resetState  state.imgInfo", state.imgInfo);
   };
 
   const form350output = (): Array<string> => {

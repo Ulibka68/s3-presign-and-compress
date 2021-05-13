@@ -30,8 +30,8 @@
     </div>
   </div>
 
-<!--Отображение результата загрузки -->
-<!--  <div v-if="resultURLS.length > 0">
+  <!--Отображение результата загрузки -->
+  <!--  <div v-if="resultURLS.length > 0">
     <h2>Изображения загруженные на сервер:</h2>
     <div v-for="(url1, ind) in resultURLS" :key="ind">
       <a :href="url1" target="_blank">
@@ -39,7 +39,6 @@
       </a>
     </div>
   </div>-->
-
 </template>
 
 <script lang="ts">
@@ -57,8 +56,6 @@ export default defineComponent({
   components: { Loader, ImageRow },
   setup() {
     const stateImgs = useImages();
-    // eslint-disable-next-line
-    (window as any).smf_VUE_image_upload_state = stateImgs;
 
     const blockInterface = ref(false);
     const image = computed<boolean>(() => stateImgs.state.imgInfo.length > 0);
@@ -101,6 +98,10 @@ pixelDepth : ${window.screen.pixelDepth}, height : ${window.screen.height}, widt
       stateImgs.state.resultURLs = await compressArray();
       // console.log(stateImgs.state.resultURLs);
       stateImgs.state.compressState = "compressFinished";
+      setTimeout(() => {
+        stateImgs.state.showPopup = false;
+        stateImgs.state.callBackFunc();
+      }, 800);
     };
 
     return {

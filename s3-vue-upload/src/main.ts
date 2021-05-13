@@ -4,6 +4,7 @@ import * as Sentry from "@sentry/browser";
 import { Severity } from "@sentry/browser";
 import { Integrations } from "@sentry/tracing";
 import App from "./App.vue";
+import { useImages } from "@/state/composition-state";
 
 Sentry.init({
   dsn:
@@ -35,6 +36,9 @@ Sentry.captureMessage(initMsg, Severity.Info);
 */
 
 app.mount("#a6309676754D94EB4B758ECCE1FCF316");
+const stateImgs = useImages();
+// eslint-disable-next-line
+(window as any).smf_VUE_image_upload_state = stateImgs;
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
