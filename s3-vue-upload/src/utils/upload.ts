@@ -67,7 +67,7 @@ function XHRupload(
     // Ждём завершения: неважно, успешного или нет
     req.onloadend = function () {
       if (req.status == 200) {
-        console.log("Успех");
+        // console.log("Успешно загружено");
         resolve("OK");
       } else {
         console.log("Ошибка " + this.status);
@@ -116,10 +116,10 @@ export async function getPreSignedUrlsObject(
 }
 
 export async function sendFileArray(): Promise<string> {
-  console.log(
+  /*console.log(
     "sendFileArray  stateImgs.state.imgInfo",
     stateImgs.state.imgInfo
-  );
+  );*/
   const newNamesTmp = [];
   for (let i = 0; i < stateImgs.state.imgInfo.length; i++) {
     const img = stateImgs.state.imgInfo[i];

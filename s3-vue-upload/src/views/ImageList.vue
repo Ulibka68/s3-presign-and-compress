@@ -66,12 +66,12 @@ export default defineComponent({
 
       for (let i = 0; i < fl.length; i++) {
         stateImgs.methods.addNewImg(fl[i]);
-        console.log("onFileChange ", fl[i].name);
+        // console.log("onFileChange ", fl[i].name);
       }
     };
 
     const uploadImages = async () => {
-      console.log("--------- uploadImages --------");
+      // console.log("--------- uploadImages --------");
 
       blockInterface.value = true;
       stateImgs.methods.cnangeAllState("Upload");
