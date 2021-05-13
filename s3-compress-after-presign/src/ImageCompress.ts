@@ -2,6 +2,8 @@ import {
   S3Client,
   PutObjectCommand,
   GetObjectCommand,
+  DeleteObjectsCommand,
+  DeleteObjectsRequest,
 } from "@aws-sdk/client-s3";
 import { Readable, Duplex } from "stream";
 import sharp = require("sharp");
@@ -29,9 +31,28 @@ const s3 = new S3Client({
 
 const CompressBacketName = process.env.COMPRESSBACKETNAME;
 
+export async function deleteImages(
+  inpPictName: Array<string>
+): Promise<boolean> {
+  // Set the parameters.
+  const objectForDelete = inpPictName.map((value) => ({ Key: value }));
+  const delParams: DeleteObjectsRequest = {
+    Bucket: process.env.TMPBACKETNAME,
+    Delete: { Objects: objectForDelete, Quiet: true },
+  };
+
+  try {
+    const data = await s3.send(new DeleteObjectsCommand(delParams));
+    return true;
+  } catch (err) {
+    console.error("ERROR : ", err.name);
+    return false;
+  }
+}
+
 export const compressImage = async (
   inpBacketName: string,
-  inpPictName,
+  inpPictName: string,
   fit: keyof FitEnum = sharp.fit.contain,
   position: number | string = sharp.gravity.centre,
   bckgrndColor: RGBA = { r: 46, g: 138, b: 138, alpha: 1 }

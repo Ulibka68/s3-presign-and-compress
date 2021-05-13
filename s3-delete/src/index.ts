@@ -1,4 +1,4 @@
-import { compressImage, deleteImages } from "./ImageCompress";
+import { compressImage } from "./ImageCompress";
 import { YC } from "./yc";
 require("dotenv").config();
 
@@ -50,8 +50,6 @@ module.exports.handler = async function (
     );
     outObject[inpFnames[i]] = retImgs;
   }
-
-  await deleteImages(inpFnames);
 
   return {
     statusCode: 200,
