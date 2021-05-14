@@ -29,16 +29,6 @@
       </button>
     </div>
   </div>
-
-  <!--Отображение результата загрузки -->
-  <!--  <div v-if="resultURLS.length > 0">
-    <h2>Изображения загруженные на сервер:</h2>
-    <div v-for="(url1, ind) in resultURLS" :key="ind">
-      <a :href="url1" target="_blank">
-        <img :src="url1" alt="" />
-      </a>
-    </div>
-  </div>-->
 </template>
 
 <script lang="ts">

@@ -16,7 +16,7 @@
   </div>
   <div>Размер : {{ Math.floor(file.size / 1024) }} Kb</div>
   <!--  <div>State {{ state }}</div>-->
-  <div>
+  <!--  <div>
     <input
       v-if="state === 'Upload'"
       type="range"
@@ -25,7 +25,13 @@
       :value="currentProgress"
       disabled
     />
-  </div>
+  </div>-->
+  <progress-bar
+    v-if="state === 'Upload'"
+    :val="currentProgress"
+    text-position="middle"
+    size="0.5rem"
+  />
 </template>
 
 <script lang="ts">
@@ -33,11 +39,12 @@ import { defineComponent, ref } from "vue";
 import { useImages } from "@/state/composition-state";
 import Image from "@/components/Image.vue";
 import Loader from "@/components/Loader.vue";
+import ProgressBar from "@/components/Progress.vue";
 
 export default defineComponent({
   name: "ImageRow",
   // eslint-disable-next-line vue/no-unused-components
-  components: { Loader, Image },
+  components: { Loader, Image, ProgressBar },
   props: {
     file: File,
     keyId: Number,
@@ -61,6 +68,12 @@ export default defineComponent({
   },
 });
 </script>
+
+<style>
+.vue-simple-progress {
+  margin: 0 0.5rem;
+}
+</style>
 
 <style scoped>
 .btnRemove {

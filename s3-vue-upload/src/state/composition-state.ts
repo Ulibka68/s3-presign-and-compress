@@ -32,7 +32,7 @@ const state = reactive({
     | "compressStart"
     | "compressFinished",
   imgInfo: [] as Array<OneImgInfo>,
-  showPopup: false,
+  showPopup: true,
   // newNames: [] as Array<string>,
   resultURLs: {} as ResultURLs,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
